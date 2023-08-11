@@ -1,7 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
-    id("kotlin-kapt")
 }
 
 android {

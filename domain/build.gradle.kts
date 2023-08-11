@@ -37,5 +37,8 @@ android {
 
 dependencies {
 
+    implementation(libs.coroutines.android)
+    implementation(libs.coroutines.core)
+    implementation(libs.javax)
 
 }

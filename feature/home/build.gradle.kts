@@ -1,7 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
-    id("kotlin-kapt")
 }
 
 android {
@@ -64,6 +63,6 @@ dependencies {
 
     implementation(libs.timber)
 
-    kapt(libs.hilt.compiler)
+    annotationProcessor(libs.hilt.compiler)
 
 }

@@ -1,7 +1,6 @@
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
-    id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
 }
 
@@ -50,9 +49,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.timber)
 
-    kapt(libs.hilt.compiler)
-    kapt(libs.androidx.room.compiler)
-
+    annotationProcessor(libs.hilt.compiler)
     annotationProcessor(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)

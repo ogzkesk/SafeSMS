@@ -1,4 +1,4 @@
-package com.ogzkesk.safesms
+package com.ogzkesk.safesms.activity
 
 import android.app.role.RoleManager
 import android.content.Context
@@ -8,16 +8,11 @@ import android.os.Bundle
 import android.provider.Telephony
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import com.ogzkesk.core.ui.theme.SafeSMSTheme
 import com.ogzkesk.safesms.ui.Root
+import com.ogzkesk.safesms.util.PermissionUtils
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 
@@ -27,6 +22,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        Timber.d("onCreate()")
         edgeToEdge()
         checkRole()
 
@@ -39,29 +35,29 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        Timber.d("onStart()")
+        super.onStart()
+    }
+
+    override fun onResume() {
+        Timber.d("onResume()")
+        super.onResume()
+    }
+
     private fun edgeToEdge(){
         WindowCompat.setDecorFitsSystemWindows(window,false)
     }
 
     private fun checkRole(){
-        if(isSmsRoleActive()){
+        if(PermissionUtils(this).isSmsRoleActive()){
             Timber.d("checkRole() == true")
-            TODO("start fetching data --> calculate tensorFlow")
+           // TODO burdan devam ---->
         } else {
             Timber.d("checkRole() == false")
-            val intent = Intent(this@MainActivity,SmsActivity::class.java)
+            val intent = Intent(this@MainActivity, SmsActivity::class.java)
             startActivity(intent)
         }
     }
 
-    private fun isSmsRoleActive(): Boolean {
-        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-
-            val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
-            roleManager.isRoleHeld(RoleManager.ROLE_SMS)
-
-        } else {
-            packageName == Telephony.Sms.getDefaultSmsPackage(this)
-        }
-    }
 }

@@ -1,8 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
     id("dagger.hilt.android.plugin")
+    id("kotlin-kapt")
 }
 
 android {
@@ -89,6 +89,7 @@ dependencies {
     implementation(libs.navigation.compose)
     implementation(libs.timber)
 
+    annotationProcessor(libs.hilt.compiler)
     kapt(libs.hilt.compiler)
 
 
