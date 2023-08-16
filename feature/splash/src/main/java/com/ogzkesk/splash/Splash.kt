@@ -16,7 +16,6 @@ import kotlinx.coroutines.delay
 @Composable
 fun Splash(onNavigate: (String) -> Unit) {
 
-
     LaunchedEffect(key1 = Unit) {
         delay(2000)
         onNavigate(Routes.Home.route)

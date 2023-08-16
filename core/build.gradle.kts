@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
@@ -6,7 +8,6 @@ plugins {
 android {
     namespace = "com.ogzkesk.core"
     compileSdk = libs.versions.compileSdk.get().toInt()
-    compileSdkPreview = "UpsideDownCakePrivacySandbox"
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
@@ -46,17 +47,36 @@ android {
 dependencies {
 
 
-    val composeBom = platform(libs.compose.bom)
-    implementation(composeBom)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.material)
-    implementation(libs.compose.ui.tooling)
+    implementation(project(":domain"))
+
+    implementation(libs.core)
+    implementation(libs.activity.compose)
+    implementation(libs.material3)
+
+//    implementation(libs.hilt)
+//    implementation(libs.hilt.navigation)
+//    kapt(libs.hilt.compiler)
+
+    implementation(libs.livedata.ktx)
+    implementation(libs.viewmodel.ktx)
+    implementation(libs.runtime.ktx)
+    implementation(libs.runtime.compose)
+    implementation(libs.viewmodel.compose)
     implementation(libs.navigation.compose)
 
+    implementation(libs.foundation)
+    implementation(libs.ui)
+    implementation(libs.ui.tooling)
+    implementation(libs.icon.pack)
+    implementation(libs.animation)
+
+    implementation(libs.coroutines.android)
+    implementation(libs.coroutines.core)
+
+    implementation(libs.data.store)
+
     implementation(libs.timber)
+    implementation(libs.tflite.text)
+
 
 }

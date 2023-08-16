@@ -22,7 +22,9 @@ class SmsRepositoryImpl @Inject constructor(private val smsDao : MessageDao):  S
         withContext(Dispatchers.IO){
             try {
                 val entities = messages.map { it.toMessageEntity() }
-                smsDao.insertMessages(entities)
+                entities.forEach { entity ->
+                    smsDao.insertMessages(entity)
+                }
 
             }catch (e: IOException){
                 Timber.d(e.localizedMessage)

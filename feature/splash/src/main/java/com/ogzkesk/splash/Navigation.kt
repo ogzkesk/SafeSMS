@@ -7,6 +7,9 @@ import com.ogzkesk.core.ui.navigation.Routes
 
 fun NavGraphBuilder.splash(navController: NavHostController) {
     composable(route = Routes.Splash.route){
-        Splash(navController::navigate)
+        Splash{
+            navController.popBackStack()
+            navController.navigate(Routes.Home.route)
+        }
     }
 }

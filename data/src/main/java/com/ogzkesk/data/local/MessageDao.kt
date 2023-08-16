@@ -12,13 +12,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MessageDao {
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertMessages(messages: List<MessageEntity>) : List<Long>
+    @Insert
+    suspend fun insertMessages(messages: MessageEntity) : Long
+
 
     @Delete
     suspend fun removeMessage(message: MessageEntity)
 
-    @Query("SELECT * from $MESSAGE_TABLE")
+    @Query("SELECT * from MessageEntity")
     fun fetchMessages() : Flow<List<MessageEntity>>
 
 

@@ -3,15 +3,14 @@ package com.ogzkesk.safesms.service
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.content.pm.ServiceInfo
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.PendingIntentCompat
+import com.ogzkesk.core.util.CHANNEL_ID
+import com.ogzkesk.core.util.SmsUtils.readSms
+import com.ogzkesk.core.util.SmsUtils.removeSms
 import com.ogzkesk.safesms.R
 import com.ogzkesk.safesms.activity.MainActivity
-import com.ogzkesk.safesms.util.CHANNEL_ID
-import com.ogzkesk.safesms.util.readSms
-import com.ogzkesk.safesms.util.removeSms
 import timber.log.Timber
 
 class SmsService : Service() {
@@ -60,14 +59,14 @@ class SmsService : Service() {
     }
 
     private fun fetchMessages() {
-
-        removeSms(this, 339)
-        val messages = readSms(this)
-        // if(detected as a spam) --- >
-        // add to DB and removeSms(this,smsID)
-        messages.forEach {
-            Timber.d(it.toString())
-        }
+//
+//        removeSms(this, 339)
+//        val messages = readSms(this)
+//        // if(detected as a spam) --- >
+//        // add to DB and removeSms(this,smsID)
+//        messages.forEach {
+//            Timber.d(it.toString())
+//        }
     }
 
     private fun stop() {

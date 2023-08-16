@@ -1,3 +1,6 @@
+@file:Suppress("UnstableApiUsage")
+
+
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
@@ -6,7 +9,6 @@ plugins {
 android {
     namespace = "com.ogzkesk.domain"
     compileSdk = libs.versions.compileSdk.get().toInt()
-    compileSdkPreview = "UpsideDownCakePrivacySandbox"
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
@@ -37,8 +39,10 @@ android {
 
 dependencies {
 
+    implementation(libs.core)
     implementation(libs.coroutines.android)
     implementation(libs.coroutines.core)
-    implementation(libs.javax)
+    implementation(libs.javax.inject)
+
 
 }

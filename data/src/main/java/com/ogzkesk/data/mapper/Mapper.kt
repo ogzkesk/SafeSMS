@@ -6,6 +6,7 @@ import com.ogzkesk.domain.model.SmsMessage
 fun MessageEntity.toSmsMessage() : SmsMessage {
     return SmsMessage(
         isSpam = isSpam,
+        isFav = isFav,
         message = message,
         sender = sender,
         date = date,
@@ -19,6 +20,7 @@ fun SmsMessage.toMessageEntity() : MessageEntity {
         id = id,
         isSpam = isSpam,
         message = message,
+        isFav = isFav,
         sender = sender,
         thread = thread,
         date = date

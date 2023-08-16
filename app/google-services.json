@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "836810979295",
+    "project_id": "safesms-14e87",
+    "storage_bucket": "safesms-14e87.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:836810979295:android:e48b1b9661986420e5b66a",
+        "android_client_info": {
+          "package_name": "com.ogzkesk.safesms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "836810979295-1uhhvos4riigr95t2tm3b8m5rn3ptpk5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ogzkesk.safesms",
+            "certificate_hash": "d426e51d4896a9e396a90a81bdf486c257f77af7"
+          }
+        },
+        {
+          "client_id": "836810979295-d28t1eleono1n6v3j67otgaepm2jmnr3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBb93YcwYMuDPaMPXP6s9-qRNJ5TmqDROw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "836810979295-d28t1eleono1n6v3j67otgaepm2jmnr3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

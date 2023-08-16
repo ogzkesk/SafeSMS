@@ -18,8 +18,11 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(application : Application): MessageDatabase {
-        return Room.databaseBuilder(application,MessageDatabase::class.java,MESSAGE_DB_NAME)
-            .fallbackToDestructiveMigration()
+        return Room.databaseBuilder(
+            application,
+            MessageDatabase::class.java,
+            MESSAGE_DB_NAME
+        )
             .build()
     }
 

@@ -1,6 +1,10 @@
+@file:Suppress("UnstableApiUsage")
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
 }
@@ -9,7 +13,6 @@ android {
 
     namespace = "com.ogzkesk.safesms"
     compileSdk = libs.versions.compileSdk.get().toInt()
-    compileSdkPreview = "UpsideDownCakePrivacySandbox"
 
     defaultConfig {
         applicationId = "com.ogzkesk.safesms"
@@ -28,6 +31,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -58,39 +62,58 @@ android {
         kotlinCompilerExtensionVersion = libs.versions.composeCompiler.get()
     }
 
-    packaging {
+    packagingOptions {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+//    packaging {
+//        resources {
+//            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+//        }
+//    }
 }
 
 dependencies {
-
-    val composeBom = platform(libs.compose.bom)
 
     implementation(project(":core"))
     implementation(project(":data"))
     implementation(project(":domain"))
     implementation(project(":feature:splash"))
     implementation(project(":feature:home"))
+    implementation(project(":feature:settings"))
+    implementation(project(":feature:chat"))
 
-    implementation(composeBom)
-    implementation(libs.accompanist.systemuicontroller)
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.android.material)
-    implementation(libs.compose.ui)
-    implementation(libs.compose.material)
-    implementation(libs.compose.ui.tooling)
-    implementation(libs.hilt.android)
-    implementation(libs.navigation.compose)
-    implementation(libs.timber)
+    implementation(libs.core)
+    implementation(libs.activity.compose)
+    implementation(libs.material3)
 
-    annotationProcessor(libs.hilt.compiler)
+    implementation(libs.hilt)
+    implementation(libs.hilt.navigation)
     kapt(libs.hilt.compiler)
 
+    implementation(libs.livedata.ktx)
+    implementation(libs.viewmodel.ktx)
+    implementation(libs.runtime.ktx)
+    implementation(libs.runtime.compose)
+    implementation(libs.viewmodel.compose)
+    implementation(libs.navigation.compose)
+
+    implementation(libs.foundation)
+    implementation(libs.ui)
+    implementation(libs.ui.tooling)
+    implementation(libs.icon.pack)
+    implementation(libs.animation)
+
+    implementation(libs.system.ui.controller)
+
+    implementation(libs.analytics)
+    implementation(libs.crashlytics)
+
+    implementation(libs.coroutines.android)
+    implementation(libs.coroutines.core)
+
+    implementation(libs.timber)
 
 }

@@ -1,14 +1,11 @@
 package com.ogzkesk.safesms.activity
 
-import android.app.role.RoleManager
-import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.provider.Telephony
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.view.WindowCompat
 import com.ogzkesk.core.ui.theme.SafeSMSTheme
 import com.ogzkesk.safesms.ui.Root
@@ -18,6 +15,8 @@ import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private var roleState = mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +28,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             SafeSMSTheme {
                 Surface {
-                    Root()
+                    Root(roleState.value)
                 }
             }
         }
@@ -52,12 +51,12 @@ class MainActivity : ComponentActivity() {
     private fun checkRole(){
         if(PermissionUtils(this).isSmsRoleActive()){
             Timber.d("checkRole() == true")
-           // TODO burdan devam ---->
+            roleState.value = true
         } else {
             Timber.d("checkRole() == false")
             val intent = Intent(this@MainActivity, SmsActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
-
 }

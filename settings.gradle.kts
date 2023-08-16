@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 pluginManagement {
     repositories {
         google()
@@ -20,3 +22,5 @@ include(":data")
 include(":feature:splash")
 include(":feature:home")
 include(":domain")
+include(":feature:settings")
+include(":feature:chat")

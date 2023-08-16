@@ -1,13 +1,16 @@
+@file:Suppress("UnstableApiUsage")
+
+
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
     id("dagger.hilt.android.plugin")
+    id("kotlin-kapt")
 }
 
 android {
     namespace = "com.ogzkesk.mylibrary"
     compileSdk = libs.versions.compileSdk.get().toInt()
-    compileSdkPreview = "UpsideDownCakePrivacySandbox"
 
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
@@ -38,22 +41,20 @@ android {
 
 dependencies {
 
-    implementation(project(":core"))
     implementation(project(":domain"))
+    implementation(project(":core"))
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.android.material)
-    implementation(libs.hilt.android)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
+    implementation(libs.core)
+    implementation(libs.coroutines.android)
+    implementation(libs.coroutines.core)
+    implementation(libs.data.store)
+    implementation(libs.hilt)
+    implementation(libs.hilt.navigation)
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
     implementation(libs.timber)
 
-    annotationProcessor(libs.hilt.compiler)
-    annotationProcessor(libs.androidx.room.compiler)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.espresso.core)
-    androidTestImplementation(libs.androidx.test.ext.junit)
+    kapt(libs.hilt.compiler)
+    kapt(libs.room.compiler)
 
 }
