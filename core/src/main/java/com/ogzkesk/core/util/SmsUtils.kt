@@ -1,10 +1,11 @@
 package com.ogzkesk.core.util
 
 import android.content.Context
+import android.provider.ContactsContract
 import android.provider.Telephony
+import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.model.SmsMessage
 import timber.log.Timber
-import java.lang.RuntimeException
 
 object SmsUtils {
 
@@ -33,6 +34,7 @@ object SmsUtils {
                             SmsMessage(
                                 isSpam = false,
                                 isFav = false,
+                                isRead = false,
                                 message = getString(indexMessage),
                                 sender = getString(indexSender),
                                 date = getLong(indexDate),
@@ -70,5 +72,44 @@ object SmsUtils {
                 Timber.tag("readSms").e(it)
             }
         }
+    }
+
+    fun readContacts(context: Context) : List<Contact> {
+
+        val messages = mutableListOf<Contact>()
+        try {
+            val cursor = context.contentResolver.query(
+                ContactsContract.Contacts.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+            )
+
+            cursor?.use { c ->
+                val indexName = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+                val indexTel = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                val indexId = c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
+
+                with(c) {
+                    while (moveToNext()) {
+                        messages.add(
+                            Contact(
+                                id = getInt(indexId),
+                                name = getString(indexName),
+                                number = getString(indexTel)
+                            )
+                        )
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            e.localizedMessage?.let {
+                Timber.tag("readSms").e(it)
+            }
+        }
+
+        return messages
     }
 }

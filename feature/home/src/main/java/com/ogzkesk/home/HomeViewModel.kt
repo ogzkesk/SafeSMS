@@ -7,6 +7,7 @@ import com.ogzkesk.core.tflite.TextClassificationClient
 import com.ogzkesk.core.util.SmsUtils
 import com.ogzkesk.domain.model.SmsMessage
 import com.ogzkesk.domain.use_case.FetchMessages
+import com.ogzkesk.domain.use_case.InsertContacts
 import com.ogzkesk.domain.use_case.InsertMessages
 import com.ogzkesk.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,7 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val fetchMessages: FetchMessages,
-    private val insertMessages: InsertMessages
+    private val insertMessages: InsertMessages,
+    private val insertContacts: InsertContacts
 ) : ViewModel() {
 
 
@@ -38,59 +40,43 @@ class HomeViewModel @Inject constructor(
     val event = _event.receiveAsFlow()
 
 
-    fun fetchMessagesFromContent(context: Context) {
+    fun initResources(context: Context) {
+
+        Timber.d("fetchMessagesFromContent()")
+        val sms = SmsUtils.readSms(context)
+        val contact = SmsUtils.readContacts(context)
 
         viewModelScope.launch(Dispatchers.IO) {
-
-            val sms = SmsUtils.readSms(context)
-
             if (sms.isNotEmpty()) {
-
-                insertMessages(
-                    classifyMessages(context, sms)
-                )
+                Timber.d("sms.isNotEmpty()")
+                insertMessages(classifyMessages(context, sms))
+            }
+            if(contact.isNotEmpty()){
+                Timber.d("contact.isNotEmpty()")
+                insertContacts(contact)
             }
         }
     }
 
     private fun classifyMessages(
         context: Context,
-        messages: List<SmsMessage>
+        messages: List<SmsMessage>,
     ): List<SmsMessage> {
 
-        val client = TextClassificationClient(context)
+        Timber.d("classifyMessages()")
 
-        return messages.map { sms ->
-
-            val category = client.classify(sms.message)
-
-            if (category.isNotEmpty() && category.size >= 2) {
-                Timber.e("category size != 2")
-                return@map sms
-            }
-
-            val score = category[1].score
-            if (score >= 0.8f) { // TODO change to preference 0.8f later on
-                SmsMessage(
-                    isSpam = true,
-                    isFav = false,
-                    message = sms.message,
-                    sender = sms.sender,
-                    date = sms.date,
-                    thread = sms.thread,
-                    id = sms.id
-                )
-            } else {
-                sms
-            }
-        }
+        val client = TextClassificationClient(context).apply { load() }
+        val classifiedSms = mapMessages(messages, client)
+        client.unload()
+        return classifiedSms
     }
+
 
     fun removeMessages(context: Context, threadId: Int) {
         _uiState.update { it.copy(isLoading = true) }
 
         SmsUtils.removeSms(context, threadId)
-        fetchMessagesFromContent(context)
+        initResources(context)
     }
 
     fun onNavigate(route: String) {
@@ -98,6 +84,47 @@ class HomeViewModel @Inject constructor(
             _event.send(HomeEvent.Navigate(route))
         }
     }
+
+    private fun mapMessages(
+        messages: List<SmsMessage>,
+        client: TextClassificationClient,
+    ): List<SmsMessage> {
+
+        Timber.d("mapMessages()")
+
+        return messages.map { sms ->
+
+            val category = client.classify(sms.message)
+
+            if (category.isEmpty() || category.size < 2) {
+                Timber.d("category.isEmpty || category.size < 2 category.size = ${category.size}")
+                return@map sms
+            }
+
+            val score = category[1].score
+            if (score >= 0.6f) {
+
+                Timber.d(
+                    "Spam Detected : score = $score message = ${sms.message}"
+                )
+
+                SmsMessage(
+                    isSpam = true,
+                    isFav = false,
+                    isRead = false,
+                    message = sms.message,
+                    sender = sms.sender,
+                    date = sms.date,
+                    thread = sms.thread,
+                    id = sms.id
+                )
+            } else {
+                Timber.d("Not spam score = $score message = ${sms.message}")
+                sms
+            }
+        }
+    }
+
 
     private fun initMessages() {
         fetchMessages().onEach { resource ->
@@ -120,7 +147,7 @@ class HomeViewModel @Inject constructor(
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,
-                            result = data
+                            data = data
                         )
                     }
                 }

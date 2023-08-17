@@ -8,6 +8,7 @@ import com.ogzkesk.data.util.Constants.MESSAGE_TABLE
 data class MessageEntity(
     val isSpam : Boolean,
     val isFav : Boolean,
+    val isRead: Boolean,
     val message: String,
     val sender: String,
     val date: Long,

@@ -4,5 +4,5 @@ import com.ogzkesk.domain.model.SmsMessage
 
 data class HomeState(
     val isLoading: Boolean = true,
-    val result : List<SmsMessage> = emptyList()
+    val data : List<SmsMessage> = emptyList()
 )

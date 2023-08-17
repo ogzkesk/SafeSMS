@@ -9,12 +9,15 @@ import com.ogzkesk.home.home
 import com.ogzkesk.home.search.search
 import com.ogzkesk.settings.settings
 import com.ogzkesk.splash.splash
+import timber.log.Timber
 
 @Composable
 fun Root(roleState: Boolean) {
 
     val navController = rememberNavController()
     if(!roleState) return
+
+
 
     NavHost(navController = navController, startDestination = Routes.Splash.route) {
         splash(navController)

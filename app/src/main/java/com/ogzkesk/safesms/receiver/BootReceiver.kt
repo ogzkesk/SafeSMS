@@ -14,7 +14,7 @@ class BootReceiver : BroadcastReceiver() {
         if(intent != null){
 
             if(intent.action == Intent.ACTION_BOOT_COMPLETED){
-                context?.startService<SmsService>()
+//                context?.startService<SmsService>()
             }
         }
     }

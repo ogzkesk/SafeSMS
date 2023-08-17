@@ -6,18 +6,21 @@ import android.Manifest.permission.SEND_SMS
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
-import android.provider.Telephony.Sms
 import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ogzkesk.core.R
-import com.ogzkesk.core.util.Constants.REMOVE_QUERY
-import com.ogzkesk.domain.model.SmsMessage
-import timber.log.Timber
 import java.text.SimpleDateFormat
+import java.time.DateTimeException
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAccessor
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
+import kotlin.time.Duration.Companion.days
 
 
 const val CHANNEL_ID = "channelId"
@@ -41,7 +44,12 @@ fun Context.shouldShowRationale(): Boolean {
     return ActivityCompat.shouldShowRequestPermissionRationale(this as Activity, READ_SMS)
 }
 
-fun Long.convertHistory(context:Context) : String {
+fun Long.formatDate() : String {
+    val formatter =  SimpleDateFormat("EE, HH:mm", Locale.getDefault())
+    return formatter.format(Date(this))
+}
+
+fun Long.getElapsedTime(context:Context) : String {
     val date = Date(this)
     return date.getTimeDiffAsString(context)
 }
@@ -51,7 +59,9 @@ fun Date.getTimeDiffAsString(context: Context): String {
         context.getString(R.string.just_now)
     } else {
         DateUtils.getRelativeTimeSpanString(
-            this.time, Date().time, DateUtils.MINUTE_IN_MILLIS,
+            this.time,
+            Date().time,
+            DateUtils.MINUTE_IN_MILLIS,
             DateUtils.FORMAT_SHOW_DATE
         ).toString()
     }

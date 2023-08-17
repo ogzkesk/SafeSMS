@@ -1,43 +1,32 @@
 package com.ogzkesk.home
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.ogzkesk.core.R
 import com.ogzkesk.core.ui.component.ErrorDialog
 import com.ogzkesk.core.ui.component.ErrorDialogState
-import com.ogzkesk.core.ui.navigation.Routes
-import com.ogzkesk.home.content.TabSection
+import com.ogzkesk.core.ui.component.LoadingContent
+import com.ogzkesk.home.content.FloatActionButton
+import com.ogzkesk.home.content.TopBar
+import com.ogzkesk.home.content.scaffold.TabSection
 import com.ogzkesk.home.content.mapMessages
-import com.ogzkesk.home.content.messageSection
+import com.ogzkesk.home.content.scaffold.messageSection
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,11 +36,16 @@ fun Home(onNavigate: (String) -> Unit) {
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val errorState = remember { ErrorDialogState() }
-    val screenIndex = remember { mutableStateOf(0) }
+    val screenIndex = remember { mutableIntStateOf(0) }
+    val isSmsFetched = rememberSaveable { mutableStateOf(false) }
     val appBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.fetchMessagesFromContent(context)
+        if (!isSmsFetched.value) {
+            Timber.d("fetchingSmsFromResolver()")
+            viewModel.initResources(context)
+            isSmsFetched.value = true
+        }
     }
 
     LaunchedEffect(key1 = viewModel.event) {
@@ -72,32 +66,16 @@ fun Home(onNavigate: (String) -> Unit) {
 
 
     val messages = mapMessages(
-        screenIndex = screenIndex.value,
+        screenIndex = screenIndex.intValue,
         uiState = uiState
     )
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                scrollBehavior = appBarBehavior,
-                title = { Text(text = stringResource(id = R.string.home)) },
-                actions = {
-
-                    IconButton(onClick = { viewModel.onNavigate(Routes.Search.route) }) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = null
-                        )
-                    }
-
-                    IconButton(onClick = { onNavigate(Routes.Settings.route) }) {
-                        Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = null
-                        )
-                    }
-                }
-            )
+            TopBar(appBarBehavior, viewModel::onNavigate)
+        },
+        floatingActionButton = {
+            FloatActionButton(viewModel::onNavigate)
         }
     ) { padd ->
 
@@ -108,26 +86,17 @@ fun Home(onNavigate: (String) -> Unit) {
         ) {
 
             TabSection(
-                selectedIndex = screenIndex.value,
-                onIndexChanged = { screenIndex.value = it }
+                inboxSize = uiState.data.filter { !it.isSpam }.size,
+                spamSize = uiState.data.filter { it.isSpam }.size,
+                selectedIndex = screenIndex.intValue,
+                onIndexChanged = { screenIndex.intValue = it }
             )
 
-            LazyColumn(
-                contentPadding = PaddingValues(horizontal = 8.dp),
-                content = {
-                    messageSection(messages) { /* TODO onMessageClicked  */ }
-                }
-            )
-
-            if (uiState.isLoading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                    content = {
-                        CircularProgressIndicator()
-                    }
-                )
+            LazyColumn {
+                messageSection(messages, viewModel::onNavigate)
             }
+
+            LoadingContent(uiState.isLoading)
 
             ErrorDialog(errorState)
         }

@@ -4,4 +4,8 @@
     <string name="just_now">Just Now</string>
     <string name="home">Home</string>
     <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="messages">Messages</string>
+    <string name="spams">Spams</string>
+    <string name="message">Message\t</string>
 </resources>
