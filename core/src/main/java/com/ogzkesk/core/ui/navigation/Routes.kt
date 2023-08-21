@@ -4,7 +4,6 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
 
-
 sealed class Routes(val route: String) {
 
     object Splash : Routes("splash")
@@ -15,19 +14,21 @@ sealed class Routes(val route: String) {
 
     object Settings : Routes("settings")
 
+    object Contacts : Routes("contact")
+
     object Chat : Routes("chat?threadId={threadId}") {
 
         const val THREAD_ID_KEY = "threadId"
 
         val arguments = listOf(
-            navArgument(THREAD_ID_KEY){
-                defaultValue = 0
+            navArgument(THREAD_ID_KEY) {
+                defaultValue = -1
                 type = NavType.IntType
             }
         )
 
         fun withArgs(threadId: Int): String {
-            return this.route.replace("{$THREAD_ID_KEY}","$threadId")
+            return this.route.replace("{$THREAD_ID_KEY}", "$threadId")
         }
     }
 }

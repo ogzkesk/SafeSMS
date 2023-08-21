@@ -23,6 +23,7 @@ object DatabaseModule {
             MessageDatabase::class.java,
             MESSAGE_DB_NAME
         )
+            .fallbackToDestructiveMigration()
             .build()
     }
 

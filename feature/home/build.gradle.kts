@@ -5,8 +5,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
     id("dagger.hilt.android.plugin")
+    id("dev.shreyaspatil.compose-compiler-report-generator")
     id("kotlin-kapt")
 }
+
 
 android {
     namespace = "com.ogzkesk.home"
@@ -44,6 +46,10 @@ android {
 
     kotlinOptions {
         jvmTarget = libs.versions.jvmTarget.get()
+    }
+
+    hilt {
+        enableAggregatingTask = true
     }
 }
 

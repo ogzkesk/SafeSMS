@@ -1,7 +1,7 @@
-package com.ogzkesk.core.tflite;
+package com.ogzkesk.core.sms;
 
 import android.content.Context;
-import android.util.Log;
+
 import java.io.IOException;
 import java.util.List;
 

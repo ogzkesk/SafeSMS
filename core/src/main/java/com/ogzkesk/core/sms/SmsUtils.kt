@@ -1,15 +1,16 @@
-package com.ogzkesk.core.util
+package com.ogzkesk.core.sms
 
 import android.content.Context
 import android.provider.ContactsContract
 import android.provider.Telephony
+import com.ogzkesk.core.util.Constants
 import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.model.SmsMessage
 import timber.log.Timber
 
 object SmsUtils {
 
-    fun readSms(context: Context): List<SmsMessage> {
+    fun readReceivedSms(context: Context): List<SmsMessage> {
 
         val messages = mutableListOf<SmsMessage>()
         try {
@@ -35,8 +36,10 @@ object SmsUtils {
                                 isSpam = false,
                                 isFav = false,
                                 isRead = false,
-                                message = getString(indexMessage),
-                                sender = getString(indexSender),
+                                type = SmsMessage.RECEIVED,
+                                name = "",
+                                message = getString(indexMessage) ?: "",
+                                sender = getString(indexSender) ?: "",
                                 date = getLong(indexDate),
                                 thread = getInt(indexThread),
                                 id = getLong(idThread)
@@ -48,7 +51,55 @@ object SmsUtils {
 
         } catch (e: Exception) {
             e.localizedMessage?.let {
-                Timber.tag("readSms").e(it)
+                Timber.e(it)
+            }
+        }
+
+        return messages.apply { addAll(readSentSms(context)) }
+    }
+
+    private fun readSentSms(context: Context): List<SmsMessage> {
+
+        val messages = mutableListOf<SmsMessage>()
+        try {
+            val cursor = context.contentResolver.query(
+                Telephony.Sms.Sent.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+            )
+
+            cursor?.use { c ->
+                val indexMessage = c.getColumnIndex(Telephony.Sms.BODY)
+                val indexSender = c.getColumnIndex(Telephony.Sms.ADDRESS)
+                val indexDate = c.getColumnIndex(Telephony.Sms.DATE)
+                val indexThread = c.getColumnIndex(Telephony.Sms.THREAD_ID)
+                val idThread = c.getColumnIndex(Telephony.Sms._ID)
+
+                with(c) {
+                    while (moveToNext()) {
+                        messages.add(
+                            SmsMessage(
+                                isSpam = false,
+                                isFav = false,
+                                isRead = false,
+                                type = SmsMessage.SENT,
+                                name = "",
+                                message = getString(indexMessage) ?: "",
+                                sender = getString(indexSender) ?: "",
+                                date = getLong(indexDate),
+                                thread = getInt(indexThread),
+                                id = getLong(idThread)
+                            )
+                        )
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            e.localizedMessage?.let {
+                Timber.e(it)
             }
         }
 
@@ -69,7 +120,7 @@ object SmsUtils {
 
         } catch (e: Exception) {
             e.localizedMessage?.let {
-                Timber.tag("readSms").e(it)
+                Timber.e(it)
             }
         }
     }
@@ -79,7 +130,7 @@ object SmsUtils {
         val messages = mutableListOf<Contact>()
         try {
             val cursor = context.contentResolver.query(
-                ContactsContract.Contacts.CONTENT_URI,
+                ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 null,
                 null,
                 null,
@@ -96,8 +147,8 @@ object SmsUtils {
                         messages.add(
                             Contact(
                                 id = getInt(indexId),
-                                name = getString(indexName),
-                                number = getString(indexTel)
+                                name = getString(indexName) ?: "",
+                                number = getString(indexTel) ?: ""
                             )
                         )
                     }
@@ -106,7 +157,7 @@ object SmsUtils {
 
         } catch (e: Exception) {
             e.localizedMessage?.let {
-                Timber.tag("readSms").e(it)
+                Timber.e(it)
             }
         }
 

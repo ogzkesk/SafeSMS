@@ -13,13 +13,13 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 
-fun Flow<List<MessageEntity>>.wrap() : Flow<Resource<List<SmsMessage>>> {
+fun Flow<List<MessageEntity>>.wrapMessage() : Flow<Resource<List<SmsMessage>>> {
     return map { entities -> Resource.Success(entities.map { it.toSmsMessage() }) }
         .catch { e -> Resource.Error(e.message,null) }
         .flowOn(Dispatchers.IO)
 }
 
-fun Flow<List<ContactEntity>>.wrap() : Flow<Resource<List<Contact>>> {
+fun Flow<List<ContactEntity>>.wrapContact() : Flow<Resource<List<Contact>>> {
     return map { entities -> Resource.Success(entities.map { it.toContact() }) }
         .catch { e -> Resource.Error(e.message,null) }
         .flowOn(Dispatchers.IO)

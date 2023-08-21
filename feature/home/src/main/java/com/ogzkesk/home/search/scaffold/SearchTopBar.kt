@@ -33,7 +33,7 @@ internal fun SearchTopBar(
     focusManager: FocusManager,
     searchText: String,
     onSearchTextChanged: (String) -> Unit,
-    onNavigate: (String?) -> Unit
+    onNavigate: (String?) -> Unit,
 ) {
 
     TopAppBar(
@@ -47,8 +47,9 @@ internal fun SearchTopBar(
                         .focusRequester(focusRequester),
                     value = searchText,
                     onValueChange = onSearchTextChanged,
+                    textStyle = MaterialTheme.typography.bodyMedium,
                     singleLine = true,
-                    maxLines = 1
+                    maxLines = 1,
                 )
 
                 if (searchText.isNotEmpty()) {

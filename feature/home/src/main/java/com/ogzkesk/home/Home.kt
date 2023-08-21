@@ -3,6 +3,7 @@ package com.ogzkesk.home
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
@@ -23,8 +24,10 @@ import com.ogzkesk.core.ui.component.ErrorDialogState
 import com.ogzkesk.core.ui.component.LoadingContent
 import com.ogzkesk.home.content.FloatActionButton
 import com.ogzkesk.home.content.TopBar
-import com.ogzkesk.home.content.scaffold.TabSection
+import com.ogzkesk.home.content.getInboxSize
+import com.ogzkesk.home.content.getSpamSize
 import com.ogzkesk.home.content.mapMessages
+import com.ogzkesk.home.content.scaffold.TabSection
 import com.ogzkesk.home.content.scaffold.messageSection
 import timber.log.Timber
 
@@ -39,6 +42,7 @@ fun Home(onNavigate: (String) -> Unit) {
     val screenIndex = remember { mutableIntStateOf(0) }
     val isSmsFetched = rememberSaveable { mutableStateOf(false) }
     val appBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(key1 = Unit) {
         if (!isSmsFetched.value) {
@@ -64,7 +68,6 @@ fun Home(onNavigate: (String) -> Unit) {
         }
     }
 
-
     val messages = mapMessages(
         screenIndex = screenIndex.intValue,
         uiState = uiState
@@ -86,13 +89,13 @@ fun Home(onNavigate: (String) -> Unit) {
         ) {
 
             TabSection(
-                inboxSize = uiState.data.filter { !it.isSpam }.size,
-                spamSize = uiState.data.filter { it.isSpam }.size,
+                inboxSize = getInboxSize(uiState.data),
+                spamSize = getSpamSize(uiState.data),
                 selectedIndex = screenIndex.intValue,
                 onIndexChanged = { screenIndex.intValue = it }
             )
 
-            LazyColumn {
+            LazyColumn(state = lazyListState) {
                 messageSection(messages, viewModel::onNavigate)
             }
 

@@ -24,10 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.ogzkesk.core.ui.navigation.Routes
 import com.ogzkesk.core.ui.theme.PurpleGrey80
+import com.ogzkesk.core.ui.theme.randomColorList
 import com.ogzkesk.core.util.getElapsedTime
 import com.ogzkesk.domain.model.SmsMessage
 
@@ -41,69 +43,104 @@ internal fun MessageItemContent(
     Card(
         colors = CardDefaults.cardColors(Color.White),
         onClick = {
-            onMessageClicked(Routes.Chat.withArgs(message.thread))
+            onMessageClicked(
+                Routes.Chat.withArgs(message.thread)
+            )
         }
     ) {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier.padding(vertical = 16.dp, horizontal = 8.dp)
+            modifier = Modifier.padding(
+                vertical = 16.dp,
+                horizontal = 8.dp
+            )
         ) {
 
-            Icon(
-                imageVector = Icons.Filled.Person2,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(36.dp)
-                    .background(PurpleGrey80)
-                    .padding(8.dp)
-            )
+            CardIcon(name = message.name)
 
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            CardContent(message = message)
+        }
+    }
+}
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
+@Composable
+private fun CardContent(message: SmsMessage) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
 
-                    if (!message.isRead) {
-                        Box(
-                            modifier = Modifier
-                                .clip(CircleShape)
-                                .size(8.dp)
-                                .background(Color.Red)
-                        )
-                    }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
 
-                    Text(
-                        text = message.sender,
-                        style = MaterialTheme.typography.titleMedium,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Text(
-                        text = message.date.getElapsedTime(LocalContext.current),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Blue
-                    )
-                }
-
-                Text(
-                    text = message.message,
-                    style = MaterialTheme.typography.bodyMedium,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
+            if (!message.isRead) {
+                Box(
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(8.dp)
+                        .background(Color.Red)
                 )
             }
+
+            Text(
+                text = message.name.ifEmpty { message.sender },
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                text = message.date.getElapsedTime(LocalContext.current),
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Blue
+            )
+        }
+
+        Text(
+            text = message.message,
+            style = MaterialTheme.typography.bodyMedium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+
+@Composable
+private fun CardIcon(name: String) {
+    if (name.isEmpty()) {
+
+        Icon(
+            imageVector = Icons.Filled.Person2,
+            contentDescription = null,
+            tint = Color.White,
+            modifier = Modifier
+                .clip(CircleShape)
+                .size(36.dp)
+                .background(PurpleGrey80)
+                .padding(8.dp)
+        )
+
+    } else {
+        Box(
+            modifier = Modifier
+                .clip(CircleShape)
+                .background(randomColorList.random())
+                .size(36.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = name.first().toString(),
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
+                color = Color.White
+            )
         }
     }
 }

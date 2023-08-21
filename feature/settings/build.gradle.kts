@@ -5,8 +5,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
     id("dagger.hilt.android.plugin")
+    id("dev.shreyaspatil.compose-compiler-report-generator")
     id("kotlin-kapt")
 }
+
 
 android {
     namespace = "com.ogzkesk.settings"

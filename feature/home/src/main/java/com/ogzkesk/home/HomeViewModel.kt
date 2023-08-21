@@ -3,9 +3,10 @@ package com.ogzkesk.home
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ogzkesk.core.tflite.TextClassificationClient
-import com.ogzkesk.core.util.SmsUtils
-import com.ogzkesk.domain.model.SmsMessage
+import com.ogzkesk.core.sms.ClassificationHelper
+import com.ogzkesk.core.sms.SmsUtils
+import com.ogzkesk.core.util.mapSenderName
+import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.use_case.FetchMessages
 import com.ogzkesk.domain.use_case.InsertContacts
 import com.ogzkesk.domain.use_case.InsertMessages
@@ -21,7 +22,6 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -29,9 +29,11 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val fetchMessages: FetchMessages,
     private val insertMessages: InsertMessages,
-    private val insertContacts: InsertContacts
+    private val insertContacts: InsertContacts,
 ) : ViewModel() {
 
+
+    private lateinit var classification: ClassificationHelper
 
     private var _uiState = MutableStateFlow(HomeState())
     val uiState = _uiState.asStateFlow()
@@ -42,33 +44,66 @@ class HomeViewModel @Inject constructor(
 
     fun initResources(context: Context) {
 
-        Timber.d("fetchMessagesFromContent()")
-        val sms = SmsUtils.readSms(context)
-        val contact = SmsUtils.readContacts(context)
+        classification = ClassificationHelper(context)
 
         viewModelScope.launch(Dispatchers.IO) {
-            if (sms.isNotEmpty()) {
-                Timber.d("sms.isNotEmpty()")
-                insertMessages(classifyMessages(context, sms))
-            }
-            if(contact.isNotEmpty()){
-                Timber.d("contact.isNotEmpty()")
-                insertContacts(contact)
-            }
+            val contacts = SmsUtils.readContacts(context)
+            insertContacts(contacts)
+            initMessages(context,contacts)
         }
     }
 
-    private fun classifyMessages(
-        context: Context,
-        messages: List<SmsMessage>,
-    ): List<SmsMessage> {
+    private fun initMessages(context: Context,contacts: List<Contact>) {
+        fetchMessages().onEach { resource ->
 
-        Timber.d("classifyMessages()")
+            when (resource) {
+                is Resource.Loading -> {
+                    _uiState.update {
+                        it.copy(isLoading = true)
+                    }
+                }
 
-        val client = TextClassificationClient(context).apply { load() }
-        val classifiedSms = mapMessages(messages, client)
-        client.unload()
-        return classifiedSms
+                is Resource.Error -> {
+
+                    _uiState.update {
+                        it.copy(isLoading = false)
+                    }
+
+                    _event.send(
+                        HomeEvent.Error(resource.message ?: "")
+                    )
+
+                    insertMessages(
+                        classification.classifyMessages(
+                            SmsUtils.readReceivedSms(context)
+                                .mapSenderName(contacts)
+                        )
+                    )
+                }
+
+                is Resource.Success -> {
+                    val data = resource.data ?: emptyList()
+
+                    _uiState.update { state ->
+                        state.copy(
+                            isLoading = false,
+                            data = data
+                        )
+                    }
+
+                    if(data.isEmpty()){
+                        insertMessages(
+                            classification.classifyMessages(
+                                SmsUtils.readReceivedSms(context)
+                                    .mapSenderName(contacts)
+                            )
+                        )
+                    }
+                }
+            }
+        }
+            .flowOn(Dispatchers.IO)
+            .launchIn(viewModelScope)
     }
 
 
@@ -83,83 +118,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _event.send(HomeEvent.Navigate(route))
         }
-    }
-
-    private fun mapMessages(
-        messages: List<SmsMessage>,
-        client: TextClassificationClient,
-    ): List<SmsMessage> {
-
-        Timber.d("mapMessages()")
-
-        return messages.map { sms ->
-
-            val category = client.classify(sms.message)
-
-            if (category.isEmpty() || category.size < 2) {
-                Timber.d("category.isEmpty || category.size < 2 category.size = ${category.size}")
-                return@map sms
-            }
-
-            val score = category[1].score
-            if (score >= 0.6f) {
-
-                Timber.d(
-                    "Spam Detected : score = $score message = ${sms.message}"
-                )
-
-                SmsMessage(
-                    isSpam = true,
-                    isFav = false,
-                    isRead = false,
-                    message = sms.message,
-                    sender = sms.sender,
-                    date = sms.date,
-                    thread = sms.thread,
-                    id = sms.id
-                )
-            } else {
-                Timber.d("Not spam score = $score message = ${sms.message}")
-                sms
-            }
-        }
-    }
-
-
-    private fun initMessages() {
-        fetchMessages().onEach { resource ->
-            when (resource) {
-                is Resource.Loading -> {
-                    _uiState.update {
-                        it.copy(isLoading = true)
-                    }
-                }
-
-                is Resource.Error -> {
-                    _event.send(
-                        HomeEvent.Error(resource.message ?: "")
-                    )
-                }
-
-                is Resource.Success -> {
-
-                    val data = resource.data ?: return@onEach
-                    _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            data = data
-                        )
-                    }
-                }
-            }
-        }
-            .flowOn(Dispatchers.IO)
-            .launchIn(viewModelScope)
-    }
-
-
-    init {
-        initMessages()
     }
 }
 

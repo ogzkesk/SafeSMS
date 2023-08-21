@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,7 +21,7 @@ import com.ogzkesk.core.util.formatDate
 import com.ogzkesk.domain.model.SmsMessage
 
 @Composable
-fun MessageContent(message: SmsMessage) {
+internal fun MessageContent(message: SmsMessage) {
 
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -34,22 +35,56 @@ fun MessageContent(message: SmsMessage) {
                     .copy(fontWeight = FontWeight.Light)
             )
 
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(end = 24.dp)
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color.White),
-                content = {
-                    Text(
-                        text = message.message,
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+            when(message.type){
+                SmsMessage.RECEIVED -> ReceivedMessageBox(message = message)
+                SmsMessage.SENT -> SentMessageBox(message = message)
+            }
+        }
+    )
+}
+
+@Composable
+private fun ColumnScope.ReceivedMessageBox(message: SmsMessage) {
+    Box(
+        modifier = Modifier
+            .align(Alignment.Start)
+            .padding(horizontal = 16.dp)
+            .padding(end = 24.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color.White),
+        content = {
+            Text(
+                text = message.message,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(16.dp)
             )
         }
     )
 }
 
+@Composable
+private fun ColumnScope.SentMessageBox(message: SmsMessage) {
+    Box(
+        modifier = Modifier
+            .align(Alignment.End)
+            .padding(horizontal = 16.dp)
+            .padding(start = 24.dp)
+            .clip(
+                RoundedCornerShape(
+                    bottomStart = 16.dp,
+                    topEnd = 16.dp,
+                    topStart = 16.dp
+                )
+            )
+            .background(MaterialTheme.colorScheme.primary),
+        content = {
+            Text(
+                text = message.message,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.padding(16.dp),
+                color = Color.White
+            )
+        }
+    )
+}

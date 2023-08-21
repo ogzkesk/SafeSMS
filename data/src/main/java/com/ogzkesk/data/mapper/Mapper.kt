@@ -10,6 +10,8 @@ fun MessageEntity.toSmsMessage() : SmsMessage {
         isSpam = isSpam,
         isFav = isFav,
         isRead = isRead,
+        type = type,
+        name = name,
         message = message,
         sender = sender,
         date = date,
@@ -25,6 +27,8 @@ fun SmsMessage.toMessageEntity() : MessageEntity {
         message = message,
         isFav = isFav,
         isRead = isRead,
+        type = type,
+        name = name,
         sender = sender,
         thread = thread,
         date = date

@@ -7,8 +7,6 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.PendingIntentCompat
 import com.ogzkesk.core.util.CHANNEL_ID
-import com.ogzkesk.core.util.SmsUtils.readSms
-import com.ogzkesk.core.util.SmsUtils.removeSms
 import com.ogzkesk.safesms.R
 import com.ogzkesk.safesms.activity.MainActivity
 import timber.log.Timber
@@ -91,6 +89,6 @@ class SmsService : Service() {
 
 
     enum class Action{
-        START, STOP, FETCH, REMOVE
+        START, STOP
     }
 }

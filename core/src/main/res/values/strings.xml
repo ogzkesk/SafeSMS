@@ -8,4 +8,10 @@
     <string name="messages">Messages</string>
     <string name="spams">Spams</string>
     <string name="message">Message\t</string>
+    <string name="new_message">New message</string>
+    <string name="to">To</string>
+    <string name="inbox">Inbox (%1$s)</string>
+    <string name="spam">Spam (%1$s)</string>
+    <string name="contact_exists">Contact already exists</string>
+    <string name="def_error_message">Something went wrong</string>
 </resources>

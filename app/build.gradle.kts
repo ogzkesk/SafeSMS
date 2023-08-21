@@ -5,9 +5,11 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("dev.shreyaspatil.compose-compiler-report-generator")
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
 }
+
 
 android {
 
@@ -68,11 +70,10 @@ android {
         }
     }
 
-//    packaging {
-//        resources {
-//            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-//        }
-//    }
+    hilt {
+        enableAggregatingTask = true
+    }
+
 }
 
 dependencies {
@@ -84,6 +85,7 @@ dependencies {
     implementation(project(":feature:home"))
     implementation(project(":feature:settings"))
     implementation(project(":feature:chat"))
+    implementation(project(":feature:contact"))
 
     implementation(libs.core)
     implementation(libs.activity.compose)
@@ -115,5 +117,10 @@ dependencies {
     implementation(libs.coroutines.core)
 
     implementation(libs.timber)
+
+    implementation(libs.room.ktx)
+    implementation(libs.room.runtime)
+    kapt(libs.room.compiler)
+
 
 }

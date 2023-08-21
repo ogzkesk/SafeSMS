@@ -3,7 +3,9 @@
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
+    id("dev.shreyaspatil.compose-compiler-report-generator")
 }
+
 
 android {
     namespace = "com.ogzkesk.core"

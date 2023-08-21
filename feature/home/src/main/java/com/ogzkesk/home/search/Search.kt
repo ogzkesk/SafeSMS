@@ -1,6 +1,5 @@
 package com.ogzkesk.home.search
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,13 +11,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ogzkesk.core.R
 import com.ogzkesk.core.ui.component.ErrorDialog
 import com.ogzkesk.core.ui.component.ErrorDialogState
 import com.ogzkesk.core.ui.component.LoadingContent
 import com.ogzkesk.home.HomeEvent
+import com.ogzkesk.home.content.convertAsConversation
 import com.ogzkesk.home.content.scaffold.messageSection
 import com.ogzkesk.home.search.scaffold.SearchTopBar
 import com.ogzkesk.home.search.scaffold.messageTitle
@@ -83,7 +82,7 @@ fun Search(
                 )
 
                 messageSection(
-                    uiState.data.filter { !it.isSpam },
+                    uiState.data.convertAsConversation().filter { !it.isSpam },
                     viewModel::onNavigate
                 )
 
@@ -93,7 +92,7 @@ fun Search(
                 )
 
                 messageSection(
-                    uiState.data.filter { it.isSpam },
+                    uiState.data.convertAsConversation().filter { it.isSpam },
                     viewModel::onNavigate
                 )
             }

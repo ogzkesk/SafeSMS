@@ -11,24 +11,15 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.ogzkesk.core.R
+import com.ogzkesk.domain.model.Contact
+import com.ogzkesk.domain.model.SmsMessage
+import timber.log.Timber
 import java.text.SimpleDateFormat
-import java.time.DateTimeException
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAccessor
-import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
-import kotlin.time.Duration.Companion.days
 
 
 const val CHANNEL_ID = "channelId"
-const val CHANNEL_NAME = "My Channel"
-
-fun Context.showToast(message: String) {
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-}
 
 fun Context.checkSmsPermission(): Boolean {
 
@@ -64,5 +55,43 @@ fun Date.getTimeDiffAsString(context: Context): String {
             DateUtils.MINUTE_IN_MILLIS,
             DateUtils.FORMAT_SHOW_DATE
         ).toString()
+    }
+}
+
+
+fun List<SmsMessage>.mapSenderName(contacts: List<Contact>) : List<SmsMessage> {
+
+    var cIndex = -1
+    var sIndex = -1
+    contacts.forEachIndexed { contactIndex, c ->
+        this.forEachIndexed { smsIndex, smsMessage ->
+            if(smsMessage.sender == c.number){
+                sIndex = smsIndex
+                cIndex = contactIndex
+            }
+        }
+    }
+
+    return mapIndexed { index, sms ->
+        if(index == sIndex){
+
+            Timber.d("mapContactName index != -1")
+
+            SmsMessage(
+                name = contacts[cIndex].name,
+                sender = sms.sender,
+                isSpam = sms.isSpam,
+                isFav = sms.isFav,
+                isRead = sms.isRead,
+                type = sms.type,
+                message = sms.message,
+                date = sms.date,
+                thread = sms.thread,
+                id = sms.id
+            )
+        } else {
+            Timber.d("mapContactName else")
+            sms
+        }
     }
 }

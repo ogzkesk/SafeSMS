@@ -3,6 +3,9 @@ buildscript {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
     }
 
     dependencies {
@@ -11,6 +14,7 @@ buildscript {
         classpath(libs.kotlin.gradle.plugin)
         classpath(libs.firebase.crashlytics.gradle)
         classpath(libs.google.services)
+        classpath(libs.compose.report)
     }
 }
 

@@ -1,22 +1,16 @@
 package com.ogzkesk.data.repository
 
 import com.ogzkesk.data.local.MessageDao
-import com.ogzkesk.data.local.entities.ContactEntity
-import com.ogzkesk.data.local.entities.MessageEntity
-import com.ogzkesk.data.mapper.toContact
 import com.ogzkesk.data.mapper.toContactEntity
 import com.ogzkesk.data.mapper.toMessageEntity
-import com.ogzkesk.data.mapper.toSmsMessage
-import com.ogzkesk.data.util.wrap
+import com.ogzkesk.data.util.wrapContact
+import com.ogzkesk.data.util.wrapMessage
 import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.model.SmsMessage
 import com.ogzkesk.domain.repository.SmsRepository
 import com.ogzkesk.domain.util.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.IOException
@@ -70,26 +64,26 @@ class SmsRepositoryImpl @Inject constructor(private val smsDao: MessageDao) : Sm
         }
     }
 
-
     override fun fetchSms(): Flow<Resource<List<SmsMessage>>> {
-        return smsDao.fetchMessages().wrap()
+        return smsDao.fetchMessages().wrapMessage()
+    }
+
+
+    override fun querySms(query: String): Flow<Resource<List<SmsMessage>>> {
+        return smsDao.queryMessages(query).wrapMessage()
+    }
+
+    override fun fetchSmsByThreadId(threadId: Int): Flow<Resource<List<SmsMessage>>> {
+        return smsDao.fetchByThreadId(threadId).wrapMessage()
     }
 
     override fun fetchContacts(): Flow<Resource<List<Contact>>> {
-        return smsDao.fetchContacts().wrap()
+        return smsDao.fetchContacts().wrapContact()
     }
 
 
     override fun queryContacts(query: String): Flow<Resource<List<Contact>>> {
-        return smsDao.queryContacts(query).wrap()
-    }
-
-    override fun querySms(query: String): Flow<Resource<List<SmsMessage>>> {
-        return smsDao.queryMessages(query).wrap()
-    }
-
-    override fun fetchSmsByThreadId(threadId: Int): Flow<Resource<List<SmsMessage>>> {
-        return smsDao.fetchByThreadId(threadId).wrap()
+        return smsDao.queryContacts(query).wrapContact()
     }
 }
 

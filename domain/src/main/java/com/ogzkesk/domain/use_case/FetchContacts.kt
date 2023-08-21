@@ -5,5 +5,5 @@ import javax.inject.Inject
 
 class FetchContacts @Inject constructor(private val smsRepository: SmsRepository) {
 
-    suspend operator fun invoke() = smsRepository.fetchContacts()
+    operator fun invoke() = smsRepository.fetchContacts()
 }
