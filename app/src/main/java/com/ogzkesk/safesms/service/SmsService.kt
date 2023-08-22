@@ -14,7 +14,6 @@ import timber.log.Timber
 class SmsService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Timber.d("onStartCommand()")
         when (intent?.action) {
             Action.START.toString() -> start()
             Action.STOP.toString() -> stop()
@@ -23,7 +22,7 @@ class SmsService : Service() {
     }
 
     private fun start() {
-        Timber.d("Service started")
+        Timber.d("start()")
 
         val intent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntentCompat.getActivity(
@@ -45,41 +44,25 @@ class SmsService : Service() {
         startForeground(1, notification)
         fetchMessages()
 
-//        object : NotificationListenerService() {
-//            override fun onNotificationPosted(sbn: StatusBarNotification?) {
-//                Log.d(TAG, "onNotificationPosted")
-//                sbn?.key ?: return
-//                snoozeNotification(sbn.key, Long.MAX_VALUE)
-//                Log.d(TAG, "onNotificationPosted snoozed!!")
-//                super.onNotificationPosted(sbn)
-//            }
-//        }
     }
 
     private fun fetchMessages() {
-//
-//        removeSms(this, 339)
-//        val messages = readSms(this)
-//        // if(detected as a spam) --- >
-//        // add to DB and removeSms(this,smsID)
-//        messages.forEach {
-//            Timber.d(it.toString())
-//        }
+
     }
 
     private fun stop() {
-        Timber.d("Service stopped")
+        Timber.d("stop()")
         stopSelf()
     }
 
 
     override fun onCreate() {
-        Timber.d("Service onCreate()")
+        Timber.d("onCreate()")
         super.onCreate()
     }
 
     override fun onDestroy() {
-        Timber.d("Service onDestroy()")
+        Timber.d("onDestroy()")
         super.onDestroy()
     }
 
