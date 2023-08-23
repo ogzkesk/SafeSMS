@@ -25,8 +25,8 @@ import com.ogzkesk.home.search.scaffold.messageTitle
 
 @Composable
 fun Search(
-    onPopBackstack: () -> Unit,
-    onNavigate: (String) -> Unit
+    onNavigateUp: () -> Unit,
+    onNavigateToChat: (arg: String?) -> Unit
 ) {
 
     val viewModel: SearchViewModel = hiltViewModel()
@@ -45,14 +45,23 @@ fun Search(
         viewModel.event.collect { event ->
             when (event) {
 
-                is HomeEvent.Navigate -> {
-                    event.route?.let(onNavigate) ?: onPopBackstack()
+                is HomeEvent.NavigateToChat -> {
+                    onNavigateToChat(event.arg)
+                }
+
+                is HomeEvent.NavigateUp -> {
+                    focusManager.clearFocus()
+                    onNavigateUp()
                 }
 
                 is HomeEvent.Error -> {
                     errorState.showErrorDialog(
                         R.string.permission_declined
                     )
+                }
+
+                else -> {
+
                 }
             }
         }
@@ -64,10 +73,9 @@ fun Search(
         topBar = {
             SearchTopBar(
                 focusRequester = focusRequester,
-                focusManager = focusManager,
                 searchText = searchText,
                 onSearchTextChanged = viewModel::onSearchTextChanged,
-                onNavigate = viewModel::onNavigate
+                onNavigateUp = viewModel::onNavigateUp
             )
         }
     ) { padd ->
@@ -83,7 +91,7 @@ fun Search(
 
                 messageSection(
                     uiState.data.convertAsConversation().filter { !it.isSpam },
-                    viewModel::onNavigate
+                    viewModel::onNavigateToChat
                 )
 
                 messageTitle(
@@ -93,7 +101,7 @@ fun Search(
 
                 messageSection(
                     uiState.data.convertAsConversation().filter { it.isSpam },
-                    viewModel::onNavigate
+                    viewModel::onNavigateToChat
                 )
             }
         )

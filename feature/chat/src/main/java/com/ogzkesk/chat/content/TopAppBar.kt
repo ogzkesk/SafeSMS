@@ -47,13 +47,14 @@ internal fun TopAppBar(
     focusRequester: FocusRequester,
     onContactTextChanged: (String) -> Unit,
     onRemoveContact: (Contact) -> Unit,
-    onNavigate: (String?) -> Unit,
+    onNavigateToContacts: () -> Unit,
+    onNavigateUp: () -> Unit,
     onCall: (String) -> Unit,
 ) {
     if (data.isNotEmpty()) {
         SmallTopBar(
             data = data.first(),
-            onNavigate = onNavigate,
+            onNavigateUp = onNavigateUp,
             onCall = onCall
         )
     } else {
@@ -63,7 +64,8 @@ internal fun TopAppBar(
             onValueChanged = onContactTextChanged,
             onRemoveContact = onRemoveContact,
             focusRequester = focusRequester,
-            onNavigate = onNavigate
+            onNavigateToContacts = onNavigateToContacts,
+            onNavigateUp = onNavigateUp
         )
     }
 }
@@ -72,7 +74,7 @@ internal fun TopAppBar(
 @Composable
 private fun SmallTopBar(
     data: SmsMessage,
-    onNavigate: (String?) -> Unit,
+    onNavigateUp: () -> Unit,
     onCall: (String) -> Unit,
 ) {
     TopAppBar(
@@ -84,7 +86,7 @@ private fun SmallTopBar(
             )
         },
         navigationIcon = {
-            IconButton(onClick = { onNavigate(null) }) {
+            IconButton(onClick = { onNavigateUp() }) {
                 Icon(
                     imageVector = Icons.Rounded.ArrowBack,
                     contentDescription = null
@@ -116,7 +118,8 @@ private fun LargeTopAppBar(
     selectedContacts: List<Contact>,
     onValueChanged: (String) -> Unit,
     onRemoveContact: (Contact) -> Unit,
-    onNavigate: (String?) -> Unit,
+    onNavigateToContacts: () -> Unit,
+    onNavigateUp: () -> Unit,
     focusRequester: FocusRequester,
 ) {
 
@@ -129,7 +132,7 @@ private fun LargeTopAppBar(
                 )
             },
             navigationIcon = {
-                IconButton(onClick = { onNavigate(null) }) {
+                IconButton(onClick = { onNavigateUp() }) {
                     Icon(
                         imageVector = Icons.Default.Close,
                         contentDescription = null
@@ -185,7 +188,7 @@ private fun LargeTopAppBar(
                     ),
                     textStyle = MaterialTheme.typography.bodyMedium,
                     trailingIcon = {
-                        IconButton(onClick = { onNavigate(Routes.Contacts.route) }) {
+                        IconButton(onClick = { onNavigateToContacts() }) {
                             Icon(
                                 imageVector = Icons.Outlined.PersonAddAlt,
                                 contentDescription = null

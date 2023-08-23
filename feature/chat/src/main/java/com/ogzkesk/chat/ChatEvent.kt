@@ -10,7 +10,9 @@ sealed class ChatEvent {
         @StringRes val resId: Int?
     ) : ChatEvent()
 
-    data class Navigate(val route: String?) : ChatEvent()
+    object NavigateToContacts : ChatEvent()
+
+    object NavigateUp : ChatEvent()
 
     data class Call(val number: String) : ChatEvent()
 

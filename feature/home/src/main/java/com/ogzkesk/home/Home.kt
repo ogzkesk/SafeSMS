@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import com.ogzkesk.core.ui.component.ErrorDialog
 import com.ogzkesk.core.ui.component.ErrorDialogState
 import com.ogzkesk.core.ui.component.LoadingContent
@@ -33,7 +34,11 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Home(onNavigate: (String) -> Unit) {
+fun Home(
+    onNavigateToChat: (arg: String?) -> Unit,
+    onNavigateToSettings: () -> Unit,
+    onNavigateToSearch: () -> Unit
+) {
 
     val context = LocalContext.current
     val viewModel: HomeViewModel = hiltViewModel()
@@ -61,8 +66,20 @@ fun Home(onNavigate: (String) -> Unit) {
                     )
                 }
 
-                is HomeEvent.Navigate -> {
-                    event.route?.let(onNavigate)
+                is HomeEvent.NavigateToChat -> {
+                    onNavigateToChat(event.arg)
+                }
+
+                is HomeEvent.NavigateToSearch -> {
+                    onNavigateToSearch()
+                }
+
+                is HomeEvent.NavigateToSettings -> {
+                    onNavigateToSettings()
+                }
+
+                is HomeEvent.NavigateUp -> {
+
                 }
             }
         }
@@ -75,10 +92,14 @@ fun Home(onNavigate: (String) -> Unit) {
 
     Scaffold(
         topBar = {
-            TopBar(appBarBehavior, viewModel::onNavigate)
+            TopBar(
+                appBarBehavior,
+                viewModel::onNavigateToSearch,
+                viewModel::onNavigateToSettings
+            )
         },
         floatingActionButton = {
-            FloatActionButton(viewModel::onNavigate)
+            FloatActionButton(viewModel::onNavigateToChat)
         }
     ) { padd ->
 
@@ -96,7 +117,7 @@ fun Home(onNavigate: (String) -> Unit) {
             )
 
             LazyColumn(state = lazyListState) {
-                messageSection(messages, viewModel::onNavigate)
+                messageSection(messages, viewModel::onNavigateToChat)
             }
 
             LoadingContent(uiState.isLoading)

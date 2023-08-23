@@ -20,9 +20,9 @@ class ContactViewModel @Inject constructor(): ViewModel() {
     val uiState = _uiState.asStateFlow()
 
 
-    fun onNavigate(route: String?){
+    fun onNavigateUp(){
         viewModelScope.launch {
-            _event.send(ContactEvent.Navigate(route))
+            _event.send(ContactEvent.NavigateUp)
         }
     }
 

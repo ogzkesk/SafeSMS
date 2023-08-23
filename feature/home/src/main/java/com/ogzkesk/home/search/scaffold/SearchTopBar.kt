@@ -30,10 +30,9 @@ import com.ogzkesk.core.R
 @Composable
 internal fun SearchTopBar(
     focusRequester: FocusRequester,
-    focusManager: FocusManager,
     searchText: String,
     onSearchTextChanged: (String) -> Unit,
-    onNavigate: (String?) -> Unit,
+    onNavigateUp: () -> Unit,
 ) {
 
     TopAppBar(
@@ -55,10 +54,7 @@ internal fun SearchTopBar(
                 if (searchText.isNotEmpty()) {
                     IconButton(
                         modifier = Modifier.size(24.dp),
-                        onClick = {
-                            onSearchTextChanged("")
-                            focusManager.clearFocus()
-                        }
+                        onClick = { onSearchTextChanged("") }
                     ) {
                         Icon(
                             modifier = Modifier.size(24.dp),
@@ -74,10 +70,7 @@ internal fun SearchTopBar(
             TextButton(
                 colors = ButtonDefaults
                     .textButtonColors(contentColor = Color.Black.copy(alpha = 0.8f)),
-                onClick = {
-                    focusManager.clearFocus()
-                    onNavigate(null)
-                },
+                onClick = { onNavigateUp() },
                 content = {
                     Text(
                         text = stringResource(id = R.string.cancel),

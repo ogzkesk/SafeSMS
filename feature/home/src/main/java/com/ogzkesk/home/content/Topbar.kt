@@ -19,7 +19,8 @@ import com.ogzkesk.core.ui.navigation.Routes
 @Composable
 internal fun TopBar(
     appBarBehavior: TopAppBarScrollBehavior,
-    onNavigate: (String) -> Unit,
+    onNavigateToSearch: () -> Unit,
+    onNavigateToSettings: () -> Unit,
 ) {
     TopAppBar(
         scrollBehavior = appBarBehavior,
@@ -31,14 +32,14 @@ internal fun TopBar(
         },
         actions = {
 
-            IconButton(onClick = { onNavigate(Routes.Search.route) }) {
+            IconButton(onClick = { onNavigateToSearch() }) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = null
                 )
             }
 
-            IconButton(onClick = { onNavigate(Routes.Settings.route) }) {
+            IconButton(onClick = { onNavigateToSettings() }) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     contentDescription = null

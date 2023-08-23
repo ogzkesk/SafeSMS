@@ -114,9 +114,21 @@ class HomeViewModel @Inject constructor(
         initResources(context)
     }
 
-    fun onNavigate(route: String) {
+    fun onNavigateToChat(route: String?) {
         viewModelScope.launch {
-            _event.send(HomeEvent.Navigate(route))
+            _event.send(HomeEvent.NavigateToChat(route))
+        }
+    }
+
+    fun onNavigateToSearch(){
+        viewModelScope.launch {
+            _event.send(HomeEvent.NavigateToSearch)
+        }
+    }
+
+    fun onNavigateToSettings(){
+        viewModelScope.launch {
+            _event.send(HomeEvent.NavigateToSettings)
         }
     }
 }

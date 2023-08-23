@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
@@ -39,7 +40,6 @@ internal fun BottomAppBar(
 ) {
 
     BottomAppBar(
-        windowInsets = WindowInsets.ime,
         contentColor = MaterialTheme.colorScheme.background,
         tonalElevation = 0.dp,
         contentPadding = PaddingValues(12.dp)

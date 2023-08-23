@@ -16,19 +16,20 @@ sealed class Routes(val route: String) {
 
     object Contacts : Routes("contact")
 
-    object Chat : Routes("chat?threadId={threadId}") {
+    object Chat : Routes("chat?sender={sender}") {
 
-        const val THREAD_ID_KEY = "threadId"
+        const val SENDER_KEY = "sender"
+        const val DEFAULT_ARG = "-1"
 
         val arguments = listOf(
-            navArgument(THREAD_ID_KEY) {
-                defaultValue = -1
-                type = NavType.IntType
+            navArgument(SENDER_KEY) {
+                defaultValue = DEFAULT_ARG
+                type = NavType.StringType
             }
         )
 
-        fun withArgs(threadId: Int): String {
-            return this.route.replace("{$THREAD_ID_KEY}", "$threadId")
+        fun withArgs(sender: String): String {
+            return this.route.replace("{$SENDER_KEY}", sender)
         }
     }
 }

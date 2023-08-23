@@ -23,7 +23,7 @@ interface SmsRepository {
 
     fun queryContacts(query: String) : Flow<Resource<List<Contact>>>
 
-    fun fetchSmsByThreadId(threadId: Int):  Flow<Resource<List<SmsMessage>>>
+    fun fetchSmsBySender(sender: String):  Flow<Resource<List<SmsMessage>>>
 
 
 }

@@ -19,7 +19,6 @@ import timber.log.Timber
 @Composable
 fun SmsRoot(event: SmsActivity.Event) {
 
-    Timber.d("SmsRoot recomposition")
     val context = LocalContext.current
     val errorDialogState = remember { ErrorDialogState() }
 

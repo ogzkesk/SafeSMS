@@ -14,11 +14,11 @@ import com.ogzkesk.core.ui.navigation.Routes
 import kotlinx.coroutines.delay
 
 @Composable
-fun Splash(onNavigate: (String) -> Unit) {
+fun Splash(onNavigateToHome: () -> Unit) {
 
     LaunchedEffect(key1 = Unit) {
         delay(2000)
-        onNavigate(Routes.Home.route)
+        onNavigateToHome()
     }
 
     Box(

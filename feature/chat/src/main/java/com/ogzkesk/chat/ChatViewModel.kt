@@ -7,7 +7,6 @@ import com.ogzkesk.chat.content.mapAsSeen
 import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.model.SmsMessage
 import com.ogzkesk.domain.use_case.FetchMessages
-import com.ogzkesk.domain.use_case.InsertMessages
 import com.ogzkesk.domain.use_case.QueryContacts
 import com.ogzkesk.domain.use_case.UpdateMessages
 import com.ogzkesk.domain.util.Resource
@@ -31,8 +30,7 @@ import javax.inject.Inject
 class ChatViewModel @Inject constructor(
     private val fetchMessages: FetchMessages,
     private val updateMessages: UpdateMessages,
-    private val queryContacts: QueryContacts,
-    private val insertMessages: InsertMessages
+    private val queryContacts: QueryContacts
 ) : ViewModel() {
 
     private val _event = Channel<ChatEvent>()
@@ -55,7 +53,7 @@ class ChatViewModel @Inject constructor(
 
     fun onContactTextChanged(query: String) {
         contactText.value = query
-        fetchContacts()
+        queryContacts()
     }
 
     fun onRemoveContact(contact: Contact){
@@ -91,32 +89,38 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun fetchSmsByThreadId(threadId: Int) {
+    fun fetchSmsBySender(sender: String) {
 
-        fetchMessages.fetchByThreadId(threadId).onEach { resource ->
+        Timber.d("sender ::$sender")
+
+        fetchMessages.fetchBySender(sender).onEach { resource ->
 
             when (resource) {
                 is Resource.Loading -> {
-                    _uiState.update { it.copy(isLoading = true) }
+                    _uiState.update {
+                        it.copy(isLoading = true)
+                    }
                 }
 
                 is Resource.Error -> {
-                    _uiState.update { it.copy(isLoading = false) }
+                    _uiState.update {
+                        it.copy(isLoading = false)
+                    }
                     _event.send(
                         ChatEvent.Error(resource.message,R.string.def_error_message)
                     )
                 }
 
                 is Resource.Success -> {
-                    val data = resource.data ?: emptyList()
 
+                    val data = resource.data ?: emptyList()
                     updateAsSeen(data)
-                    getContactByNumber(data.first().sender)
+                    getContactByNumber(data)
 
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            data = data
+                            data = data.reversed()
                         )
                     }
                 }
@@ -138,10 +142,12 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    private fun getContactByNumber(number: String){
-        queryContacts(number).onEach { resource ->
+    private fun getContactByNumber(data: List<SmsMessage>){
+        if(data.isEmpty()) return
+
+        queryContacts(data.first().sender).onEach { resource ->
             val contacts = resource.data ?: emptyList()
-            Timber.d("gelen Contact : $contacts")
+            Timber.d("contacts : $contacts")
             _uiState.update {
                 it.copy(
                     isLoading = false,
@@ -153,7 +159,7 @@ class ChatViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    private fun fetchContacts() {
+    private fun queryContacts() {
 
         if (contactText.value.isEmpty()) {
             _uiState.update { it.copy(contacts = emptyList()) }
@@ -193,14 +199,19 @@ class ChatViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onNavigate(route: String?) {
+    fun onNavigateToContacts() {
         viewModelScope.launch {
-            _event.send(ChatEvent.Navigate(route))
+            _event.send(ChatEvent.NavigateToContacts)
+        }
+    }
+
+    fun onNavigateUp(){
+        viewModelScope.launch {
+            _event.send(ChatEvent.NavigateUp)
         }
     }
 
     fun onSendSms(sms: String,contacts: List<Contact>){
-        Timber.d("onSendSms() ::$sms")
         viewModelScope.launch {
             _event.send(
                 ChatEvent.SendSms(contacts,sms)
@@ -208,21 +219,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-//    fun onSendSmsSuccess(message: String,threadId: Int,contacts: List<Contact>){
-//        val smsMessages = mutableListOf<SmsMessage>()
-//        viewModelScope.launch(Dispatchers.IO) {
-//            contacts.forEach {
-//                smsMessages.add(
-//                    SmsMessage(
-//                        isSpam = false,
-//                        isFav = false,
-//                        isRead = true,
-//
-//                    )
-//                )
-//            }
-//        }
-//    }
 
     fun onCall(number: String){
         viewModelScope.launch {

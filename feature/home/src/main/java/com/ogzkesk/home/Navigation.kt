@@ -1,14 +1,20 @@
 package com.ogzkesk.home
 
-import android.app.Activity
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.activity
 import androidx.navigation.compose.composable
 import com.ogzkesk.core.ui.navigation.Routes
 
-fun NavGraphBuilder.home(navController: NavHostController) {
-    composable(route = Routes.Home.route){
-        Home(navController::navigate)
+fun NavGraphBuilder.home(
+    onNavigateToChat: (arg: String?, entry: NavBackStackEntry) -> Unit,
+    onNavigateToSettings : (entry: NavBackStackEntry) -> Unit,
+    onNavigateToSearch : (entry: NavBackStackEntry) -> Unit
+) {
+    composable(route = Routes.Home.route) { entry ->
+        Home(
+            onNavigateToChat = { arg -> onNavigateToChat(arg, entry) },
+            onNavigateToSettings = { onNavigateToSettings(entry) },
+            onNavigateToSearch = { onNavigateToSearch(entry) },
+        )
     }
 }

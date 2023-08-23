@@ -23,7 +23,7 @@ import com.ogzkesk.core.ui.component.ErrorDialogState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Contact(onPopBackStack: () -> Unit, onNavigate: (String) -> Unit) {
+fun Contact(onNavigateUp: () -> Unit) {
 
     val viewModel: ContactViewModel = hiltViewModel()
     val errorDialogState = remember { ErrorDialogState() }
@@ -36,8 +36,8 @@ fun Contact(onPopBackStack: () -> Unit, onNavigate: (String) -> Unit) {
                     errorDialogState.showErrorDialog(event.message)
                 }
 
-                is ContactEvent.Navigate -> {
-                    event.route?.let(onNavigate) ?: onPopBackStack()
+                is ContactEvent.NavigateUp -> {
+                    onNavigateUp()
                 }
             }
         }
@@ -50,7 +50,7 @@ fun Contact(onPopBackStack: () -> Unit, onNavigate: (String) -> Unit) {
 
                 },
                 navigationIcon = {
-                    IconButton(onClick = { onPopBackStack() }) {
+                    IconButton(onClick = viewModel::onNavigateUp) {
                         Icon(imageVector = Icons.Rounded.ArrowBack, contentDescription = null)
                     }
                 }

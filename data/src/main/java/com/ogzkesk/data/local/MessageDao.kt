@@ -43,7 +43,7 @@ interface MessageDao {
     fun queryMessages(query: String): Flow<List<MessageEntity>>
 
 
-    @Query("SELECT * from MessageEntity WHERE thread = :threadId")
-    fun fetchByThreadId(threadId: Int): Flow<List<MessageEntity>>
+    @Query("SELECT * from MessageEntity WHERE sender = :sender")
+    fun fetchBySender(sender: String): Flow<List<MessageEntity>>
 
 }

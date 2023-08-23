@@ -73,9 +73,19 @@ class SearchViewModel @Inject constructor(
             .launchIn(viewModelScope)
     }
 
-    fun onNavigate(route: String?) {
+    fun onNavigateToChat(arg: String?) {
         viewModelScope.launch {
-            _event.send(HomeEvent.Navigate(route))
+            _event.send(
+                HomeEvent.NavigateToChat(arg)
+            )
+        }
+    }
+
+    fun onNavigateUp(){
+        viewModelScope.launch {
+            _event.send(
+                HomeEvent.NavigateUp
+            )
         }
     }
 }

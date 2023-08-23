@@ -73,8 +73,8 @@ class SmsRepositoryImpl @Inject constructor(private val smsDao: MessageDao) : Sm
         return smsDao.queryMessages(query).wrapMessage()
     }
 
-    override fun fetchSmsByThreadId(threadId: Int): Flow<Resource<List<SmsMessage>>> {
-        return smsDao.fetchByThreadId(threadId).wrapMessage()
+    override fun fetchSmsBySender(sender: String): Flow<Resource<List<SmsMessage>>> {
+        return smsDao.fetchBySender(sender).wrapMessage()
     }
 
     override fun fetchContacts(): Flow<Resource<List<Contact>>> {

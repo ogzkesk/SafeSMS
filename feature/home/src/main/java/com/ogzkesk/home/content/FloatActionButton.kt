@@ -7,9 +7,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 
 @Composable
-internal fun FloatActionButton(onNavigate: (String) -> Unit) {
+internal fun FloatActionButton(onNavigateChat: (String?) -> Unit) {
     FloatingActionButton(
-        onClick = { onNavigate("chat") }
+        onClick = { onNavigateChat(null) }
     ) {
         Icon(imageVector = Icons.Rounded.Add, contentDescription = null)
     }

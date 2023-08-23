@@ -32,20 +32,20 @@ import com.ogzkesk.core.ui.theme.PurpleGrey80
 import com.ogzkesk.core.ui.theme.randomColorList
 import com.ogzkesk.core.util.getElapsedTime
 import com.ogzkesk.domain.model.SmsMessage
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun MessageItemContent(
     message: SmsMessage,
-    onMessageClicked: (String) -> Unit,
+    onMessageClicked: (arg: String) -> Unit,
 ) {
+
 
     Card(
         colors = CardDefaults.cardColors(Color.White),
         onClick = {
-            onMessageClicked(
-                Routes.Chat.withArgs(message.thread)
-            )
+            onMessageClicked(message.sender)
         }
     ) {
 

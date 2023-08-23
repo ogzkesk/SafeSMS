@@ -6,7 +6,7 @@ import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.model.SmsMessage
 import timber.log.Timber
 
-const val DEFAULT_ARG = -1
+
 
 
 internal fun List<SmsMessage>.mapAsSeen() : List<SmsMessage> {
