@@ -18,4 +18,6 @@ sealed class ChatEvent {
 
     data class SendSms(val contacts: List<Contact>,val message: String) : ChatEvent()
 
+    object ContactSelected : ChatEvent()
+
 }

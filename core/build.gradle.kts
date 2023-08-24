@@ -4,6 +4,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.library")
     id("dev.shreyaspatil.compose-compiler-report-generator")
+    id("dagger.hilt.android.plugin")
+    id("kotlin-kapt")
 }
 
 
@@ -55,9 +57,9 @@ dependencies {
     implementation(libs.activity.compose)
     implementation(libs.material3)
 
-//    implementation(libs.hilt)
-//    implementation(libs.hilt.navigation)
-//    kapt(libs.hilt.compiler)
+    implementation(libs.hilt)
+    implementation(libs.hilt.navigation)
+    kapt(libs.hilt.compiler)
 
     implementation(libs.livedata.ktx)
     implementation(libs.viewmodel.ktx)

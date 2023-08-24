@@ -6,10 +6,6 @@ import timber.log.Timber
 
 class AppNavController(val navController: NavHostController) {
 
-
-    val currentRoute: String?
-        get() = navController.currentDestination?.route
-
     fun navigateUp() {
         navController.navigateUp()
     }
@@ -49,7 +45,7 @@ class AppNavController(val navController: NavHostController) {
             navController.navigate(Routes.Chat.route)
             return
         }
-        Timber.d("asıl route :: ${Routes.Chat.withArgs(arg)}")
+
         navController.navigate(Routes.Chat.withArgs(arg))
     }
 

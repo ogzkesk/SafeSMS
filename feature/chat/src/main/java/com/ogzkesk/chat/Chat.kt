@@ -32,7 +32,7 @@ import timber.log.Timber
 fun Chat(
     sender: String,
     onNavigateToContacts: () -> Unit,
-    onNavigateUp: () -> Unit
+    onNavigateUp: () -> Unit,
 ) {
 
     val context = LocalContext.current
@@ -44,14 +44,24 @@ fun Chat(
     val messageFocusRequester = remember { FocusRequester() }
     val contactFocusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
+    val lazyListState = rememberLazyListState()
+
+
+    LaunchedEffect(key1 = state.data){
+        if(lazyListState.canScrollBackward){
+            lazyListState.scrollToItem(0)
+        }
+    }
 
 
     LaunchedEffect(key1 = viewModel.event) {
         viewModel.event.collect { event ->
             when (event) {
+
                 is ChatEvent.Error -> {
-                    event.message?.let(errorDialogState::showErrorDialog) ?:
-                    event.resId?.let(errorDialogState::showErrorDialog)
+                    event.message?.let(errorDialogState::showErrorDialog) ?: event.resId?.let(
+                        errorDialogState::showErrorDialog
+                    )
                 }
 
                 is ChatEvent.NavigateToContacts -> {
@@ -70,7 +80,11 @@ fun Chat(
                 }
 
                 is ChatEvent.SendSms -> {
-                    sendSms(context,event.contacts,event.message)
+                    sendSms(context, event.contacts, event.message)
+                }
+
+                is ChatEvent.ContactSelected -> {
+                    messageFocusRequester.requestFocus()
                 }
             }
         }
@@ -96,8 +110,8 @@ fun Chat(
                 contactText = contactText,
                 focusRequester = contactFocusRequester,
                 onContactTextChanged = viewModel::onContactTextChanged,
-                onRemoveContact = viewModel::onRemoveContact,
                 onNavigateToContacts = viewModel::onNavigateToContacts,
+                onRemoveContact = viewModel::onRemoveContact,
                 onNavigateUp = viewModel::onNavigateUp,
                 onCall = viewModel::onCall
             )
@@ -114,6 +128,7 @@ fun Chat(
     ) { padd ->
 
         LazyColumn(
+            state = lazyListState,
             contentPadding = padd,
             reverseLayout = true,
             content = {

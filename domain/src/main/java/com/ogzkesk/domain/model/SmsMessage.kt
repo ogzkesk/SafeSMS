@@ -10,7 +10,6 @@ data class SmsMessage(
     val sender: String,
     val name: String,
     val date: Long,
-    val thread: Int,
     val id: Long
 ){
     companion object{

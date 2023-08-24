@@ -2,6 +2,7 @@ package com.ogzkesk.core.ui.navigation
 
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 
 
 sealed class Routes(val route: String) {
@@ -26,6 +27,10 @@ sealed class Routes(val route: String) {
                 defaultValue = DEFAULT_ARG
                 type = NavType.StringType
             }
+        )
+
+        val deepLinks = listOf(
+            navDeepLink { uriPattern = "chat/{sender}" }
         )
 
         fun withArgs(sender: String): String {

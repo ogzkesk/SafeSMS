@@ -14,7 +14,8 @@ fun NavGraphBuilder.chat(
 
     composable(
         route = Routes.Chat.route,
-        arguments = Routes.Chat.arguments
+        arguments = Routes.Chat.arguments,
+        deepLinks = Routes.Chat.deepLinks
     ) { entry ->
 
         Chat(

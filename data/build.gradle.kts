@@ -53,6 +53,7 @@ dependencies {
     implementation(libs.room.ktx)
     implementation(libs.room.runtime)
     implementation(libs.timber)
+    implementation(libs.data.store)
 
     kapt(libs.hilt.compiler)
     kapt(libs.room.compiler)

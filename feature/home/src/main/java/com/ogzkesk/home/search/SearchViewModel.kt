@@ -59,10 +59,10 @@ class SearchViewModel @Inject constructor(
                 }
                 is Resource.Success -> {
                     val data = resource.data ?: _uiState.value.data
-                    _uiState.update {
-                        it.copy(
+                    _uiState.update { state ->
+                        state.copy(
                             isLoading = false,
-                            data = data
+                            data = data.sortedBy { it.date }.reversed()
                         )
                     }
                 }

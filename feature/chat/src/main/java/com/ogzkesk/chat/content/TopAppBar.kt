@@ -82,7 +82,8 @@ private fun SmallTopBar(
             Text(
                 text = data.name.ifEmpty { data.sender },
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 1
+                maxLines = 1,
+                style = MaterialTheme.typography.bodyLarge
             )
         },
         navigationIcon = {

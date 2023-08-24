@@ -1,11 +1,13 @@
 package com.ogzkesk.core.util
 
+import android.Manifest
 import android.Manifest.permission.READ_SMS
 import android.Manifest.permission.RECEIVE_SMS
 import android.Manifest.permission.SEND_SMS
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -19,20 +21,20 @@ import java.util.Date
 import java.util.Locale
 
 
-const val CHANNEL_ID = "channelId"
 
-fun Context.checkSmsPermission(): Boolean {
+fun checkNotificationPermission(context: Context): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
 
-    val readPermission = ContextCompat.checkSelfPermission(this, READ_SMS)
-    val receivePermission = ContextCompat.checkSelfPermission(this, RECEIVE_SMS)
-    val sendPermission = ContextCompat.checkSelfPermission(this, SEND_SMS)
-    val grantedCode = PackageManager.PERMISSION_GRANTED
+        val permission = ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.POST_NOTIFICATIONS
+        )
 
-    return !(readPermission != grantedCode || receivePermission != grantedCode || sendPermission != grantedCode)
-}
+        permission == PackageManager.PERMISSION_GRANTED
 
-fun Context.shouldShowRationale(): Boolean {
-    return ActivityCompat.shouldShowRequestPermissionRationale(this as Activity, READ_SMS)
+    } else {
+        true
+    }
 }
 
 fun Long.formatDate() : String {
@@ -75,8 +77,6 @@ fun List<SmsMessage>.mapSenderName(contacts: List<Contact>) : List<SmsMessage> {
     return mapIndexed { index, sms ->
         if(index == sIndex){
 
-            Timber.d("mapContactName index != -1")
-
             SmsMessage(
                 name = contacts[cIndex].name,
                 sender = sms.sender,
@@ -86,11 +86,9 @@ fun List<SmsMessage>.mapSenderName(contacts: List<Contact>) : List<SmsMessage> {
                 type = sms.type,
                 message = sms.message,
                 date = sms.date,
-                thread = sms.thread,
                 id = sms.id
             )
         } else {
-            Timber.d("mapContactName else")
             sms
         }
     }

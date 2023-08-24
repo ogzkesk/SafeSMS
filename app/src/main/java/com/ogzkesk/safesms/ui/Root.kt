@@ -12,7 +12,7 @@ import com.ogzkesk.settings.settings
 import com.ogzkesk.splash.splash
 
 @Composable
-fun Root(roleState: Boolean) {
+fun Root(roleState: Boolean, sender: String?) {
 
     val appNavController = rememberAppNavController()
     if(!roleState) return
@@ -20,11 +20,8 @@ fun Root(roleState: Boolean) {
 
     NavHost(
         navController = appNavController.navController,
-        startDestination = Routes.Splash.route
+        startDestination = Routes.Home.route
     ) {
-        splash(
-            appNavController::navigateToHome
-        )
         home(
             appNavController::navigateToChat,
             appNavController::navigateToSettings,
@@ -44,5 +41,10 @@ fun Root(roleState: Boolean) {
         settings(
             appNavController::navigateUp
         )
+    }
+
+    if(sender != null) {
+        appNavController.navController
+            .navigate(Routes.Chat.withArgs(sender))
     }
 }

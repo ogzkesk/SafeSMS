@@ -15,7 +15,6 @@ fun MessageEntity.toSmsMessage() : SmsMessage {
         message = message,
         sender = sender,
         date = date,
-        thread = thread,
         id = id
     )
 }
@@ -30,7 +29,6 @@ fun SmsMessage.toMessageEntity() : MessageEntity {
         type = type,
         name = name,
         sender = sender,
-        thread = thread,
         date = date
     )
 }

@@ -26,7 +26,6 @@ object SmsUtils {
                 val indexMessage = c.getColumnIndex(Telephony.Sms.BODY)
                 val indexSender = c.getColumnIndex(Telephony.Sms.ADDRESS)
                 val indexDate = c.getColumnIndex(Telephony.Sms.DATE)
-                val indexThread = c.getColumnIndex(Telephony.Sms.THREAD_ID)
                 val idThread = c.getColumnIndex(Telephony.Sms._ID)
 
                 with(c) {
@@ -41,7 +40,6 @@ object SmsUtils {
                                 message = getString(indexMessage) ?: "",
                                 sender = getString(indexSender) ?: "",
                                 date = getLong(indexDate),
-                                thread = getInt(indexThread),
                                 id = getLong(idThread)
                             )
                         )
@@ -74,7 +72,6 @@ object SmsUtils {
                 val indexMessage = c.getColumnIndex(Telephony.Sms.BODY)
                 val indexSender = c.getColumnIndex(Telephony.Sms.ADDRESS)
                 val indexDate = c.getColumnIndex(Telephony.Sms.DATE)
-                val indexThread = c.getColumnIndex(Telephony.Sms.THREAD_ID)
                 val idThread = c.getColumnIndex(Telephony.Sms._ID)
 
                 with(c) {
@@ -83,13 +80,12 @@ object SmsUtils {
                             SmsMessage(
                                 isSpam = false,
                                 isFav = false,
-                                isRead = false,
+                                isRead = true,
                                 type = SmsMessage.SENT,
                                 name = "",
                                 message = getString(indexMessage) ?: "",
                                 sender = getString(indexSender) ?: "",
                                 date = getLong(indexDate),
-                                thread = getInt(indexThread),
                                 id = getLong(idThread)
                             )
                         )

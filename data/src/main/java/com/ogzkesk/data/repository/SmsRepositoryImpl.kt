@@ -1,5 +1,6 @@
 package com.ogzkesk.data.repository
 
+import com.ogzkesk.core.ext.withIOContext
 import com.ogzkesk.data.local.MessageDao
 import com.ogzkesk.data.mapper.toContactEntity
 import com.ogzkesk.data.mapper.toMessageEntity
@@ -9,17 +10,18 @@ import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.model.SmsMessage
 import com.ogzkesk.domain.repository.SmsRepository
 import com.ogzkesk.domain.util.Resource
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
-class SmsRepositoryImpl @Inject constructor(private val smsDao: MessageDao) : SmsRepository {
+class SmsRepositoryImpl @Inject constructor(
+    private val smsDao: MessageDao,
+) : SmsRepository {
 
     override suspend fun insertSms(messages: List<SmsMessage>) {
-        withContext(Dispatchers.IO) {
+        withIOContext {
             try {
                 val entities = messages.map { it.toMessageEntity() }
                 smsDao.insertMessages(entities)
@@ -31,7 +33,7 @@ class SmsRepositoryImpl @Inject constructor(private val smsDao: MessageDao) : Sm
     }
 
     override suspend fun insertContacts(contacts: List<Contact>) {
-        withContext(Dispatchers.IO){
+        withIOContext {
             try {
                 val entities = contacts.map { it.toContactEntity() }
                 smsDao.insertContacts(entities)
@@ -43,7 +45,7 @@ class SmsRepositoryImpl @Inject constructor(private val smsDao: MessageDao) : Sm
 
 
     override suspend fun removeSms(message: SmsMessage) {
-        withContext(Dispatchers.IO) {
+        withIOContext {
             try {
                 smsDao.removeMessage(message.toMessageEntity())
             } catch (e: IOException) {
@@ -54,7 +56,7 @@ class SmsRepositoryImpl @Inject constructor(private val smsDao: MessageDao) : Sm
 
 
     override suspend fun updateSms(messages: List<SmsMessage>) {
-        withContext(Dispatchers.IO){
+        withIOContext {
             try {
                 val entities = messages.map { it.toMessageEntity() }
                 smsDao.updateMessages(entities)

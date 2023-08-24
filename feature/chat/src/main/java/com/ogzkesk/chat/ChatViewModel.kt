@@ -4,33 +4,43 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ogzkesk.chat.content.mapAsSeen
+import com.ogzkesk.core.R
+import com.ogzkesk.core.ext.flowOnIO
+import com.ogzkesk.core.ext.launchIO
+import com.ogzkesk.core.ext.reset
+import com.ogzkesk.core.util.Constants.EMPTY
 import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.model.SmsMessage
 import com.ogzkesk.domain.use_case.FetchMessages
+import com.ogzkesk.domain.use_case.InsertMessages
+import com.ogzkesk.domain.use_case.Preferences
 import com.ogzkesk.domain.use_case.QueryContacts
 import com.ogzkesk.domain.use_case.UpdateMessages
 import com.ogzkesk.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import com.ogzkesk.core.R
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class ChatViewModel @Inject constructor(
     private val fetchMessages: FetchMessages,
     private val updateMessages: UpdateMessages,
-    private val queryContacts: QueryContacts
+    private val queryContacts: QueryContacts,
+    private val insertMessages: InsertMessages,
+    private val preferences: Preferences,
 ) : ViewModel() {
 
     private val _event = Channel<ChatEvent>()
@@ -38,6 +48,14 @@ class ChatViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ChatState())
     val uiState = _uiState.asStateFlow()
+
+    private val phoneNumber : StateFlow<String> = preferences.readPhoneNumber
+        .flowOnIO()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = EMPTY
+        )
 
     var messageText = mutableStateOf("")
         private set
@@ -68,7 +86,7 @@ class ChatViewModel @Inject constructor(
 
     fun onContactSelected(contact: Contact) {
 
-        contactText.value = ""
+        contactText.reset()
         val selectedContacts = mutableListOf<Contact>()
         selectedContacts.addAll(uiState.value.selectedContacts)
 
@@ -86,6 +104,10 @@ class ChatViewModel @Inject constructor(
                 contacts = emptyList(),
                 selectedContacts = selectedContacts.toList()
             )
+        }
+
+        viewModelScope.launch {
+            _event.send(ChatEvent.ContactSelected)
         }
     }
 
@@ -117,16 +139,16 @@ class ChatViewModel @Inject constructor(
                     updateAsSeen(data)
                     getContactByNumber(data)
 
-                    _uiState.update {
-                        it.copy(
+                    _uiState.update { state ->
+                        state.copy(
                             isLoading = false,
-                            data = data.reversed()
+                            data = data.sortedBy { it.date }.reversed()
                         )
                     }
                 }
             }
         }
-            .flowOn(Dispatchers.IO)
+            .flowOnIO()
             .launchIn(viewModelScope)
     }
 
@@ -135,7 +157,7 @@ class ChatViewModel @Inject constructor(
         if (data.isEmpty()) return
         val isSeen = data.any { it.isRead }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             if (!isSeen) {
                 updateMessages(data.mapAsSeen())
             }
@@ -155,7 +177,7 @@ class ChatViewModel @Inject constructor(
                 )
             }
         }
-            .flowOn(Dispatchers.IO)
+            .flowOnIO()
             .launchIn(viewModelScope)
     }
 
@@ -195,7 +217,7 @@ class ChatViewModel @Inject constructor(
             }
         }
             .distinctUntilChanged()
-            .flowOn(Dispatchers.IO)
+            .flowOnIO()
             .launchIn(viewModelScope)
     }
 
@@ -212,10 +234,33 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onSendSms(sms: String,contacts: List<Contact>){
+
+        messageText.reset()
+        insertSendSms(contacts,sms)
+
         viewModelScope.launch {
-            _event.send(
-                ChatEvent.SendSms(contacts,sms)
+            _event.send(ChatEvent.SendSms(contacts,sms))
+        }
+    }
+
+    private fun insertSendSms(contacts: List<Contact>, sms: String){
+
+        val messages = contacts.map { contact ->
+            SmsMessage(
+                isRead = true,
+                isFav = false,
+                isSpam = false,
+                type = SmsMessage.SENT,
+                message = sms,
+                sender = contact.number,
+                name = contact.name,
+                date = System.currentTimeMillis(),
+                id = UUID.randomUUID().mostSignificantBits
             )
+        }
+
+        viewModelScope.launchIO {
+            insertMessages(messages)
         }
     }
 

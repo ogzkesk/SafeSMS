@@ -3,6 +3,8 @@ package com.ogzkesk.home
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ogzkesk.core.ext.flowOnIO
+import com.ogzkesk.core.ext.launchIO
 import com.ogzkesk.core.sms.ClassificationHelper
 import com.ogzkesk.core.sms.SmsUtils
 import com.ogzkesk.core.util.mapSenderName
@@ -12,11 +14,9 @@ import com.ogzkesk.domain.use_case.InsertContacts
 import com.ogzkesk.domain.use_case.InsertMessages
 import com.ogzkesk.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -46,7 +46,7 @@ class HomeViewModel @Inject constructor(
 
         classification = ClassificationHelper(context)
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launchIO {
             val contacts = SmsUtils.readContacts(context)
             insertContacts(contacts)
             initMessages(context,contacts)
@@ -87,7 +87,7 @@ class HomeViewModel @Inject constructor(
                     _uiState.update { state ->
                         state.copy(
                             isLoading = false,
-                            data = data
+                            data = data.sortedBy { it.date }.reversed()
                         )
                     }
 
@@ -102,7 +102,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
-            .flowOn(Dispatchers.IO)
+            .flowOnIO()
             .launchIn(viewModelScope)
     }
 

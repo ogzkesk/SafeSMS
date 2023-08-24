@@ -10,26 +10,16 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.content.getSystemService
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.lifecycleScope
 import com.ogzkesk.core.ui.theme.SafeSMSTheme
 import com.ogzkesk.safesms.ui.SmsRoot
 import com.ogzkesk.safesms.util.PermissionUtils
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -60,9 +50,9 @@ class SmsActivity : ComponentActivity() {
     }
 
     private fun initLauncher() {
-        activityResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-
+        activityResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) {
                 if (PermissionUtils(this).checkIsRoleHeld(roleManager)) {
                     event = Event.PERMISSION_GRANTED
                     Timber.d("activityResultLauncher RoleHeld == true")
@@ -72,6 +62,7 @@ class SmsActivity : ComponentActivity() {
                     Timber.d("activityResultLauncher RoleHeld == false")
                 }
             }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -86,6 +77,7 @@ class SmsActivity : ComponentActivity() {
             } else {
                 Timber.d("Sending role intent")
                 val intent = roleManager?.createRequestRoleIntent(RoleManager.ROLE_SMS)
+                Timber.d("intent :: $intent")
                 activityResultLauncher.launch(intent)
             }
         }

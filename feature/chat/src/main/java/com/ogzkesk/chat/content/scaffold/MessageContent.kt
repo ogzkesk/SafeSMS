@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -29,6 +31,8 @@ internal fun MessageContent(message: SmsMessage) {
         verticalArrangement = Arrangement.spacedBy(8.dp),
         content = {
 
+            Spacer(modifier = Modifier.width(16.dp))
+
             Text(
                 text = message.date.formatDate(),
                 style = MaterialTheme.typography.bodySmall
@@ -50,7 +54,6 @@ private fun ColumnScope.ReceivedMessageBox(message: SmsMessage) {
             .align(Alignment.Start)
             .padding(horizontal = 16.dp)
             .padding(end = 24.dp)
-            .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(Color.White),
         content = {

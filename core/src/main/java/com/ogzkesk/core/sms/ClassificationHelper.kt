@@ -46,7 +46,6 @@ class ClassificationHelper(private val context: Context) {
                     message = sms.message,
                     sender = sms.sender,
                     date = sms.date,
-                    thread = sms.thread,
                     id = sms.id
                 )
             } else {

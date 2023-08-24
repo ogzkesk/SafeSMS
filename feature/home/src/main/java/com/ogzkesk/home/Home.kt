@@ -3,10 +3,7 @@ package com.ogzkesk.home
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -16,10 +13,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavBackStackEntry
 import com.ogzkesk.core.ui.component.ErrorDialog
 import com.ogzkesk.core.ui.component.ErrorDialogState
 import com.ogzkesk.core.ui.component.LoadingContent
@@ -32,7 +27,6 @@ import com.ogzkesk.home.content.scaffold.TabSection
 import com.ogzkesk.home.content.scaffold.messageSection
 import timber.log.Timber
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
     onNavigateToChat: (arg: String?) -> Unit,
@@ -44,10 +38,8 @@ fun Home(
     val viewModel: HomeViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val errorState = remember { ErrorDialogState() }
-    val screenIndex = remember { mutableIntStateOf(0) }
+    val screenIndex = rememberSaveable { mutableIntStateOf(0) }
     val isSmsFetched = rememberSaveable { mutableStateOf(false) }
-    val appBarBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    val lazyListState = rememberLazyListState()
 
     LaunchedEffect(key1 = Unit) {
         if (!isSmsFetched.value) {
@@ -93,7 +85,6 @@ fun Home(
     Scaffold(
         topBar = {
             TopBar(
-                appBarBehavior,
                 viewModel::onNavigateToSearch,
                 viewModel::onNavigateToSettings
             )
@@ -103,11 +94,7 @@ fun Home(
         }
     ) { padd ->
 
-        Column(
-            modifier = Modifier
-                .padding(padd)
-                .nestedScroll(appBarBehavior.nestedScrollConnection)
-        ) {
+        Column(modifier = Modifier.padding(padd)) {
 
             TabSection(
                 inboxSize = getInboxSize(uiState.data),
@@ -116,7 +103,7 @@ fun Home(
                 onIndexChanged = { screenIndex.intValue = it }
             )
 
-            LazyColumn(state = lazyListState) {
+            LazyColumn {
                 messageSection(messages, viewModel::onNavigateToChat)
             }
 

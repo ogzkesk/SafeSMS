@@ -4,12 +4,9 @@ import android.content.Context
 import android.telephony.SmsManager
 import com.ogzkesk.domain.model.Contact
 import com.ogzkesk.domain.model.SmsMessage
-import timber.log.Timber
 
 
-
-
-internal fun List<SmsMessage>.mapAsSeen() : List<SmsMessage> {
+fun List<SmsMessage>.mapAsSeen() : List<SmsMessage> {
     return map { sms ->
         SmsMessage(
             isRead = true,
@@ -19,21 +16,18 @@ internal fun List<SmsMessage>.mapAsSeen() : List<SmsMessage> {
             name = sms.name,
             message = sms.message,
             sender = sms.sender,
-            thread = sms.thread,
             date = sms.date,
             id = sms.id
         )
     }
 }
 
-internal fun sendSms(
+fun sendSms(
     context: Context,
     contacts: List<Contact>,
     message: String,
 ){
 
-    Timber.d("Gelen message :: $message")
-    Timber.d("contacts :: $contacts")
     context.getSystemService(SmsManager::class.java).apply {
         contacts.forEach {
             sendTextMessage(

@@ -18,12 +18,10 @@ import com.ogzkesk.core.ui.navigation.Routes
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun TopBar(
-    appBarBehavior: TopAppBarScrollBehavior,
     onNavigateToSearch: () -> Unit,
     onNavigateToSettings: () -> Unit,
 ) {
     TopAppBar(
-        scrollBehavior = appBarBehavior,
         title = {
             Text(
                 text = stringResource(id = R.string.home),

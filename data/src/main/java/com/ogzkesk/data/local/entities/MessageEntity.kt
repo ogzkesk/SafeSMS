@@ -13,6 +13,5 @@ data class MessageEntity(
     val message: String,
     val sender: String,
     val date: Long,
-    val thread: Int,
     @PrimaryKey val id: Long,
 )

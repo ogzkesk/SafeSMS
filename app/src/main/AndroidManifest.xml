@@ -39,6 +39,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
                 <category android:name="android.app.role.SMS"/>
+                <data android:scheme="https" android:host="www.example.com" />
             </intent-filter>
         </activity>
 
@@ -72,7 +73,8 @@
             <intent-filter android:priority="999">
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
                 <action android:name="android.provider.Telephony.SMS_DELIVER" />
-                <action android:name="android.provider.Telephony.SMS_DELIVER_ACTION" />
+
+
             </intent-filter>
         </receiver>
 
@@ -83,19 +85,6 @@
             <intent-filter>
                 <action android:name="android.provider.Telephony.WAP_PUSH_DELIVER" />
                 <data android:mimeType="application/vnd.wap.mms-message" />
-            </intent-filter>
-        </receiver>
-
-
-        <receiver
-            android:name=".receiver.BootReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-                <action android:name="android.intent.action.REBOOT" />
-                <action android:name="com.htc.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
 
@@ -115,7 +104,6 @@
                 <data android:scheme="mmsto" />
             </intent-filter>
         </service>
-
 
     </application>
 
