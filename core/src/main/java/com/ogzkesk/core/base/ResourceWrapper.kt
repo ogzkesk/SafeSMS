@@ -4,7 +4,6 @@ import com.ogzkesk.domain.util.Resource
 
 class ResourceWrapper<T>() {
 
-    // TODO migrate later..
 
     fun wrap(
         resource: Resource<List<T>>,
