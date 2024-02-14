@@ -44,7 +44,10 @@ fun SmsRoot(event: SmsActivity.Event) {
                 }
             }
 
-            else -> {}
+            else -> {
+                println("onElse()")
+
+            }
         }
     }
 

@@ -27,6 +27,7 @@ class SmsActivity : ComponentActivity() {
 
     private var roleManager: RoleManager? = null
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+    private lateinit var permissionLauncher: ActivityResultLauncher<String>
     private var event by mutableStateOf(Event.DEFAULT)
 
 
@@ -35,10 +36,12 @@ class SmsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         roleManager = getSystemService()
+        println("onCreate()")
 
         edgeToEdge()
-        initLauncher()
-        startPermission()
+        initPermissionLauncher()
+        initActivityLauncher()
+        startRequestForSmsRole()
 
         setContent {
             SafeSMSTheme {
@@ -49,7 +52,17 @@ class SmsActivity : ComponentActivity() {
         }
     }
 
-    private fun initLauncher() {
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun initPermissionLauncher(){
+        permissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+            if(it){
+                startRequestForSmsRole()
+            }
+        }
+        permissionLauncher.launch(android.Manifest.permission.READ_PHONE_NUMBERS)
+    }
+
+    private fun initActivityLauncher() {
         activityResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartActivityForResult()
         ) {
@@ -66,7 +79,7 @@ class SmsActivity : ComponentActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
-    private fun startPermission() {
+    private fun startRequestForSmsRole() {
         PermissionUtils(this).setAppAsSms { isOnLowerApi ->
             if (isOnLowerApi) {
                 Timber.d("Sending role intent lower api")
